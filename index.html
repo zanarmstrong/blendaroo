@@ -972,6 +972,7 @@ let savedS = {};
 try { savedS = JSON.parse(localStorage.getItem('slideRead.settings') || '{}') || {}; } catch (e) {}
 if (typeof savedS === 'object') Object.assign(S, savedS);
 // first visit on this device: nothing saved yet (Zan, Nov 19). The welcome card shows, and the first lesson is the CVC review.
+const OPENED_WITH_LINK = /^#p=/.test(location.hash);   // a progress link from another device: a returning reader, so no welcome card over the "Add it" question
 const FIRST_VISIT = (() => { try { return !['slideRead.settings', 'slideRead.progress', 'slideRead.session', 'slideRead.welcomed'].some(k => localStorage.getItem(k)); } catch (e) { return false; } })();
 if (FIRST_VISIT) { S.level = 'u'; S.unit = 5.8; }
 if (!S.bdOff19) { S.bd = false; S.bdOff19 = true; }   // once (Nov 19): outlines were on for everyone by default; now off, turn on in Settings
@@ -2945,7 +2946,7 @@ $('spaceSvg').addEventListener('click', e => {
 // The link carries every record this device knows (its own, other devices', the old shared one) after "#p=".
 // The part after # never leaves the browser, so nothing about the reader is sent to any server.
 // Opening it adds those records here; a device's record is replaced by a newer copy, never counted twice.
-const SITE_URL = '__SITE_URL__';
+const SITE_URL = '';
 const b64u = bytes => { let s = ''; bytes.forEach(b => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
 const unb64u = t => { const s = atob(t.replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(s, c => c.charCodeAt(0)); };
 async function pipe(bytes, stream) { return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer()); }
@@ -3135,7 +3136,7 @@ $('wcPicks').addEventListener('click', e => {
   openStart();                                    // the Ready card: this lesson, and how many words today
 });
 $('welcomeLink').addEventListener('click', e => { e.preventDefault(); showWelcome(); });
-if (FIRST_VISIT) Promise.race([storeDone, new Promise(r => setTimeout(r, 3000))]).then(() => {
+if (FIRST_VISIT && !OPENED_WITH_LINK) Promise.race([storeDone, new Promise(r => setTimeout(r, 3000))]).then(() => {
   if (!(base && base.words) && !Object.keys(others || {}).length && !score) showWelcome();
 });
 (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => { if (!current) nextWord(); else layout(); });
