@@ -83,6 +83,26 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .gtick { position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; background: var(--paper); opacity: .9; }
 
 /* goal + celebration cards */
+/* welcome card (first visit) */
+.card.welcome { text-align: left; gap: 10px; max-height: calc(100dvh - 32px); overflow-y: auto; }
+.card.welcome h2 { text-align: center; margin: 0; }
+.card.welcome .wc-sub { text-align: center; color: var(--soft); font-size: 1.05rem; }
+.wc-list { list-style: none; margin: 4px 0; padding: 0; display: grid; gap: 12px; }
+.wc-list li { display: grid; grid-template-columns: 4.6rem 1fr; gap: 12px; align-items: center; }
+.wc-list li p { font-family: var(--f-ui); font-size: 1rem; line-height: 1.35; color: var(--ink); }
+.wc-ex { display: grid; place-items: center; font-family: var(--f-word); font-size: 1.7rem; color: var(--ink); min-height: 3.2rem; }
+.wc-ex .wc-word { font-size: 1.9rem; line-height: 1.3; justify-content: center; }
+.wc-track { position: relative; display: block; width: 4.2rem; height: 22px; border-radius: 11px; background: var(--groove); box-shadow: inset 0 2px 0 var(--groove-edge); margin-top: 6px; }
+.wc-trail { position: absolute; left: 0; top: 0; bottom: 0; width: 2.6rem; border-radius: 11px; background: color-mix(in srgb, var(--bead) 35%, transparent); }
+.wc-bead { position: absolute; top: 50%; left: 2.6rem; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--bead);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--bead) 55%, #000); display: grid; place-items: center; color: var(--bead-ink); font-size: .8rem; font-weight: 700; line-height: 1; }
+.wc-alien svg { width: 3.2rem; height: auto; display: block; }
+.wc-name { font-family: var(--f-word); font-size: 1.05rem; color: var(--ink); line-height: 1.1; }
+.wc-ten { width: 2.8rem; height: 2.8rem; min-height: 0; border-radius: 50%; background: var(--gold); color: #3a2a00; font-family: var(--f-ui); font-weight: 800; font-size: 1.3rem; justify-self: center; }
+.card.welcome .wc-start { font-family: var(--f-ui); font-size: 1rem; color: var(--ink); }
+.card.welcome #welcomeGo { justify-self: center; align-self: center; }
+@media (max-width: 360px) { .wc-list li { grid-template-columns: 3.8rem 1fr; gap: 8px; } .wc-ex .wc-word { font-size: 1.6rem; } .wc-track { width: 3.6rem; } .wc-trail { width: 2.2rem; } .wc-bead { left: 2.2rem; } }
+@media (max-height: 640px) { .wc-list { gap: 6px; } .wc-list li p { font-size: .92rem; } .wc-ex { font-size: 1.4rem; min-height: 2.6rem; } }
 .cover { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; padding: 16px; grid-template-columns: minmax(0, 560px); justify-content: center;
   background: color-mix(in srgb, var(--paper) 82%, transparent); }
 .card { position: relative; z-index: 2; background: var(--card); border-radius: 28px; padding: 32px; width: min(560px, 100%);
@@ -471,6 +491,8 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .ls-name { margin: 0; font-family: var(--f-word); font-size: 1.25rem; }
 .find input { font: inherit; font-size: 1rem; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--groove-edge); background: var(--card); color: var(--ink); width: 100%; box-sizing: border-box; }
 .find-out { display: grid; gap: 4px; }
+.ls-or { display: grid; gap: 4px; margin: 2px 0 6px; }
+.row .ls-or-lbl { font-family: var(--f-ui); font-weight: 400; font-size: .95rem; color: var(--soft); text-transform: none; letter-spacing: 0; }
 .card.lesson input[type=search] { min-width: 0; width: 100%; font: inherit; font-size: 1rem; padding: 8px 10px; border-radius: 10px; border: 1.5px solid var(--groove-edge); background: var(--paper); color: var(--ink); }
 .card.lesson .wl-open { order: 0; justify-self: start; margin-top: -8px; }
 .cur-lesson { margin: 0; }
@@ -625,14 +647,14 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
         <button type="button" data-v="c">Common words</button>
       </div></div>
     <div class="row"><label for="lsLesson" id="lsLessonLbl">Lesson</label><select id="lsLesson"></select>
+      <div class="ls-or find"><label for="findBox" class="ls-or-lbl">or search by pattern</label>
+        <input type="search" id="findBox" placeholder="like ild, oa, magic e, -tion" autocomplete="off" spellcheck="false">
+        <div class="find-out" id="findOut" hidden></div></div>
       <p class="ls-name" id="lsName" hidden></p>
       <div class="cw" id="lsCw" hidden><span class="cw-val" id="lsCwVal"></span><input type="range" id="lsCwRange" min="10" max="300" step="10" aria-label="How many common words"><span class="cw-ends"><span>10</span><span id="lsCwMax">300</span></span></div>
       <p class="ls-preview" id="lsPreview"></p>
       <p class="ls-count" id="lsCount"></p>
       <button type="button" class="ls-link add-open" id="addOpen">+ Add words to this lesson</button></div>
-    <div class="row find ls-find"><label for="findBox">Find a pattern</label>
-      <input type="search" id="findBox" placeholder="like ild, oa, magic e, -tion" autocomplete="off" spellcheck="false">
-      <div class="find-out" id="findOut" hidden></div></div>
     <button type="button" class="ls-link wl-open" id="wlOpen">See the words in every lesson</button>
     <div class="row"><span class="lbl">Words</span>
       <div class="seg big" id="lsKinds">
@@ -696,6 +718,24 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
   <div class="card">
     <h2>Work in progress</h2>
     <button class="btn primary" type="button" id="aboutClose">Back</button>
+  </div>
+</div>
+<div class="cover" id="welcomeCover" style="z-index:10" hidden>
+  <div class="card welcome" role="dialog" aria-labelledby="wcTitle">
+    <h2 id="wcTitle">Welcome to Blendaroo</h2>
+    <p class="wc-sub">Flashcards for reading words by sounding them out.</p>
+    <ul class="wc-list">
+      <li><span class="wc-ex wc-slide" aria-hidden="true"><span id="wcSlide"></span><span class="wc-track"><span class="wc-trail"></span><span class="wc-bead">›</span></span></span>
+        <p><b>Slide to read.</b> Slide a finger under the word and it lights up one sound at a time. Say each sound out loud and keep your voice going to blend them: “mmmaaap… map!”</p></li>
+      <li><span class="wc-ex wc-alien" aria-hidden="true"><span id="wcAlien"></span><span class="wc-name" id="wcAlienName"></span></span>
+        <p><b>Aliens.</b> Some words are made up but follow the same patterns. Read one and you get an alien, named after the word.</p></li>
+      <li><span class="wc-ex wc-heart" aria-hidden="true" id="wcHeart"></span>
+        <p><b>Hearts.</b> Irregular words show all at once. The part with a heart is learned “by heart”; sound out the rest.</p></li>
+      <li><span class="wc-ex wc-ten" aria-hidden="true">10</span>
+        <p><b>Every 10 words</b>, pause to re-read them and celebrate.</p></li>
+    </ul>
+    <p class="wc-start">To start, choose a lesson (a sound pattern to practice) or Common words, then how many words to read today.</p>
+    <button class="btn primary" type="button" id="welcomeGo">Let’s start</button>
   </div>
 </div>
 <div class="cover" id="xferCover" style="z-index:9" hidden>
@@ -837,6 +877,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
       <p>Many curricula also refer to “sight,” “sticky,” or “trick” words. These are typically a mix of common irregulars and other common words that are “decodable” (spelled phonetically).</p>
       <p>To focus on common words, choose “Common words” and select the word list to draw from (top 10 most common, top 60, top 200, etc.). Then you can select if you want to focus on common words that are “decodable,” “irregular,” or both.</p>
       <p><a href="#" id="aboutLink">Learn more about the research behind this tool</a></p>
+      <p><a href="#" id="welcomeLink">Show the welcome screen</a></p>
     </div>
     <div class="row custom" id="customRow"><span class="lbl">Custom lesson lists</span>
       <div class="cl-lists" id="customLists"></div>
@@ -899,12 +940,25 @@ let S = { ...DEFAULTS };
 let savedS = {};
 try { savedS = JSON.parse(localStorage.getItem('slideRead.settings') || '{}') || {}; } catch (e) {}
 if (typeof savedS === 'object') Object.assign(S, savedS);
+// first visit on this device: nothing saved yet (Zan, Nov 19). The welcome card shows, and the first lesson is the CVC review.
+const FIRST_VISIT = (() => { try { return !['slideRead.settings', 'slideRead.progress', 'slideRead.session', 'slideRead.welcomed'].some(k => localStorage.getItem(k)); } catch (e) { return false; } })();
+if (FIRST_VISIT) { S.level = 'u'; S.unit = 5.8; }
+// a lesson in the address (?lesson=u-45): a shared link opens that lesson; the address follows the chosen lesson
+const URL_LESSON = (() => { try { const m = (new URLSearchParams(location.search).get('lesson') || '').match(/^([uhcf])-(\d+(?:\.\d+)?)$/); return m ? { level: m[1], unit: +m[2] } : null; } catch (e) { return null; } })();
 if (!Array.isArray(savedS.kinds) && savedS.mix) S.kinds = S.mix === 'real' ? ['real'] : S.mix === 'made' ? ['made'] : ['real', 'made'];
 if (S.level === 'u') { S.kinds = S.kinds.filter(k => k !== 'trick'); if (!S.kinds.length) S.kinds = ['real', 'made']; }   // By phoneme lessons have no heart words
 delete S.mix;
 delete S.lines; delete S.linesDefaultOff; delete S.font; delete S.peek; delete S.wide; delete S.reread;   // writing lines and the font choice were removed
 delete S.l2u3Default;
-function save() { try { localStorage.setItem('slideRead.settings', JSON.stringify(S)); } catch (e) {} }
+function save() { try { localStorage.setItem('slideRead.settings', JSON.stringify(S)); } catch (e) {} syncUrl(); }
+function syncUrl() {   // the address carries the lesson, so copying it shares the lesson (uploaded lists stay private: not in the address)
+  try {
+    const p = new URLSearchParams(location.search);
+    if (isCustom(S.level)) p.delete('lesson'); else p.set('lesson', S.level + '-' + S.unit);
+    const q = p.toString().replace(/%2C/g, ','), url = location.pathname + (q ? '?' + q : '') + location.hash;
+    if (url !== location.pathname + location.search + location.hash) window.history.replaceState(null, '', url);   // (the app's own 'history' is its list of words)
+  } catch (e) {}
+}
 
 function ordinal(lv, u) { return lv === 'y' ? 6000 + u : lv === 'x' ? 5000 + u : lv === 'f' ? 4000 + u : lv === 'c' ? 3000 + u : lv === 'h' ? 2000 + u : 1000 + u; }
 
@@ -2542,6 +2596,7 @@ async function flushProgress() {
   saving = false;
   if (dirty) { clearTimeout(saveTimer); saveTimer = setTimeout(flushProgress, 3000); }
 }
+let storeDone = Promise.resolve();   // the account's progress has been read (the Claude version); the website has no account
 /* website: progress is kept on this device */
 function recordWord(c) {
   mine.words++;
@@ -2963,7 +3018,11 @@ window.addEventListener('hashchange', checkLink);
 paintCustomButtons(); renderCustom();
 document.documentElement.classList.toggle('hpink', !!S.hstroke);   // pink heart marks in the previews too
 if (S.level === 'u') { S.kinds = S.kinds.filter(k => k !== 'trick'); if (!S.kinds.length) S.kinds = ['real', 'made']; }   // e.g. moved over from an old built-in lists lesson
+if (URL_LESSON && LESSONS.some(x => x.level === URL_LESSON.level && x.unit === URL_LESSON.unit) && (URL_LESSON.level !== S.level || URL_LESSON.unit !== S.unit)) {
+  S.kinds = kindsFor(URL_LESSON.level, S.level, S.kinds); S.level = URL_LESSON.level; S.unit = URL_LESSON.unit; rememberLesson();
+}
 if (!LESSONS.some(x => x.level === S.level && x.unit === S.unit)) Object.assign(S, lastIn(trackOf(S.level)));
+syncUrl();
 restoreSession();
 warmedUp = score > 0;   // picking up a session from earlier today: no warm-up again
 label();
@@ -2973,6 +3032,22 @@ applyType();
 openLesson();
 updateBackup();
 checkLink();
+// ---------- welcome (first visit on this device; in the Claude version, also no progress in the account) ----------
+// the welcome's examples use the app's own word markup (sound dots and lines, the pink heart), so they look the same as in a lesson
+function wcWord(w, heartWord, lit) {
+  const map = heartWord ? heartMap(w, 2001) : w, parts = [], hearts = [];
+  map.replace(/\[([^\]|]+)(?:\|[\d.]+)?\]|([^\[]+)/g, (a, h, p) => { if (h) { parts.push(h); hearts.push(true); } else chunks(p, 1005.8).forEach(c => { parts.push(c); hearts.push(false); }); return a; });
+  return '<span class="word wide wc-word' + (S.hstroke ? ' hstroke' : '') + '">' + parts.map((c, i) => `<span class="ch${c.length > 1 ? ' multi' : ''}${hearts[i] ? ' heart' : ''}${i < lit ? ' on' : ''}">${c}${hearts[i] ? HEART_SVG : ''}</span>`).join('') + '</span>';
+}
+function showWelcome() {
+  const first = (DATA_U.find(x => x.n === 5.8) || { made: [] }).made.find(w => /^[a-z]{3,5}$/.test(w)) || 'jat';   // a made-up word from the first lesson
+  $('wcSlide').innerHTML = wcWord('map', false, 2); $('wcHeart').innerHTML = wcWord('said', true, 9);
+  $('wcAlien').innerHTML = creatureSvg(first, false); $('wcAlienName').textContent = first; $('welcomeCover').hidden = false; const c = document.querySelector('#welcomeCover .card'); c.scrollTop = 0; $('welcomeGo').focus({ preventScroll: true }); }
+$('welcomeGo').addEventListener('click', () => { $('welcomeCover').hidden = true; try { localStorage.setItem('slideRead.welcomed', '1'); } catch (e) {} });
+$('welcomeLink').addEventListener('click', e => { e.preventDefault(); showWelcome(); });
+if (FIRST_VISIT) Promise.race([storeDone, new Promise(r => setTimeout(r, 3000))]).then(() => {
+  if (!(base && base.words) && !Object.keys(others || {}).length && !score) showWelcome();
+});
 (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => { if (!current) nextWord(); else layout(); });
 </script>
 <script>
