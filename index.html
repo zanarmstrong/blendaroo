@@ -58,6 +58,9 @@
   --groove-edge: #2c3a55; --oops: #ef8a62; --heart: #fb4f74; --pink: #f58cc6; --bd: #ffa654; --gold: #f4c13d; color-scheme: dark;
 }
 html, body { height: 100%; }
+/* no double-tap zoom on phones and tablets: a quick second tap on a button would zoom the page in, and since pinching
+   is blocked (gesturestart below) there was no way back out. Taps also register right away. */
+html, body, button, a, input, select, label, summary, .cover, .sheet { touch-action: manipulation; }
 body {
   margin: 0;
   background: var(--paper); color: var(--ink); font-family: var(--f-ui);
@@ -460,6 +463,12 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
   box-sizing: border-box; display: grid; gap: 16px; max-height: 100%; overflow: auto; font-size: 1.05rem;
 }
 .panel h2 { margin: 0; font-size: 1.6rem; line-height: 1.1; }
+/* Settings is long (Done was ~3000px down on a phone): keep a way out pinned at the top while scrolling */
+.panel-head { position: sticky; top: -24px; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: -24px -24px 0; padding: 16px 24px 12px; background: var(--card); border-bottom: 1.5px solid var(--groove-edge); }
+.panel-head .btn { padding: 4px 18px; }
+.sheet { -webkit-overflow-scrolling: touch; }
+.panel { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; max-height: calc(100dvh - 32px); }
 .row { display: grid; gap: 6px; }
 .row label, .row .lbl { font-weight: 700; }
 .panel select { min-width: 0; max-width: 100%; font: inherit; padding: 8px 10px; border-radius: 10px; border: 1.5px solid var(--groove-edge); background: var(--paper); color: var(--ink); }
@@ -880,7 +889,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 
 <div class="sheet" id="sheet" hidden>
   <form class="panel" id="panel">
-    <h2>Settings</h2>
+    <div class="panel-head"><h2>Settings</h2><button class="btn primary" type="submit">Done</button></div>
     <div class="row"><span class="lbl">Lesson</span>
       <p class="cur-lesson" id="curLesson"></p>
       <button class="btn" type="button" id="changeLessonBtn">Change lesson</button></div>
@@ -2379,27 +2388,57 @@ function showVoiceHelp() {
 }
 if (window.speechSynthesis) window.speechSynthesis.addEventListener && window.speechSynthesis.addEventListener('voiceschanged', () => { if (!$('sheet').hidden) showVoiceHelp(); });
 $('voiceTry').addEventListener('click', () => speakWord('sulled'));
+// Speak right away, inside the tap. iPhones and iPads only let a page speak during the tap itself: the old code waited
+// for the voice list (often empty on the first tap there), so the speech came later and was silently blocked.
+// If no voices are listed yet, the device's default voice is used.
+let lastUtterance = null;   // keep a reference: Chrome on Android can drop an utterance mid-way and never speak it
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();   // start loading the voice list early
+  // unlock speech on the first tap anywhere, so later speech that isn't inside a tap (press-and-hold on the
+  // re-read tiles, which speaks from a timer) is allowed on iPhone and iPad too
+  const unlock = e => {
+    if (e.target.closest && e.target.closest('#sayBtn, #voiceTry')) return;   // those speak for real, which unlocks it too
+    document.removeEventListener('touchend', unlock, true); document.removeEventListener('click', unlock, true);
+    const s = window.speechSynthesis;
+    if (!s.speaking && !s.pending) { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; s.speak(u); }
+  };
+  document.addEventListener('touchend', unlock, true); document.addEventListener('click', unlock, true);
+}
 function speakWord(w) {
   const synth = window.speechSynthesis; if (!synth) return;
-  synth.cancel();
-  let spoken = false;
-  const go = () => {
-    if (spoken) return; spoken = true;
-    const text = sayAs(w).replace(/\.$/, '');
-    const say = skipRemote => {
-      const u = new SpeechSynthesisUtterance(text); u.rate = SPEAK_RATE;
-      const v = pickVoice(skipRemote); if (v) u.voice = v;
-      // Google's voice speaks over the internet: if it fails (offline), say it again with a voice on the device
-      if (v && v.localService === false && !skipRemote) u.onerror = e => { if (e.error !== 'interrupted' && e.error !== 'canceled') say(true); };
-      synth.speak(u);
-    };
-    say(false);
+  // cancel() just before speak() makes Safari drop the new utterance, so only cancel when something is playing
+  if (synth.speaking || synth.pending) synth.cancel();
+  if (synth.paused) synth.resume();   // Chrome can be left paused (e.g. after the tab was in the background)
+  const text = sayAs(w).replace(/\.$/, '');
+  const say = skipRemote => {
+    const u = new SpeechSynthesisUtterance(text); u.rate = SPEAK_RATE; u.lang = 'en-US';
+    const v = pickVoice(skipRemote); if (v) { u.voice = v; u.lang = v.lang; }
+    let started = false;
+    u.onstart = () => { started = true; };
+    if (v && v.localService === false && !skipRemote) {
+      // Google's voice speaks over the internet: if it fails or never starts (offline, slow), say it with a voice on the device
+      u.onerror = e => { if (!started && e.error !== 'interrupted' && e.error !== 'canceled') say(true); };
+      setTimeout(() => { if (!started && lastUtterance === u) { synth.cancel(); say(true); } }, 1500);
+    }
+    lastUtterance = u;
+    synth.speak(u);
   };
-  if (synth.getVoices().length) go(); else { synth.onvoiceschanged = go; setTimeout(go, 300); }
+  say(false);
 }
 if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch (e) {} }   // play even with the iPad on silent
 // 👂 only once she has seen the whole word (slid to the end, or a heart word shown whole): no listening instead of sounding out
-$('sayBtn').addEventListener('click', () => { if (current && !$('doneRow').classList.contains('off')) speakWord(current.w); });
+$('sayBtn').addEventListener('click', () => { if (current && !$('doneRow').classList.contains('off')) { speakWord(current.w); silentTip(); } });
+// iPhones and iPads mute web speech when the ring/silent switch is on, and no web page can tell: the speech even
+// reports that it played. So for the first few taps on this device, a quiet reminder under the word.
+const SILENT_TIPS = 3, SILENT_MSG = '🔕 No sound? Turn off silent mode and turn the volume up.';
+function silentTip() {
+  const k = deviceKind(); if (k !== 'iphone' && k !== 'ipad') return;
+  let n = 0; try { n = +localStorage.getItem('slideRead.silentTips') || 0; } catch (e) {}
+  if (n >= SILENT_TIPS || hint.textContent) return;   // don't cover another message
+  try { localStorage.setItem('slideRead.silentTips', String(n + 1)); } catch (e) {}
+  setHint(SILENT_MSG);
+  setTimeout(() => { if (hint.textContent === SILENT_MSG) setHint(''); }, 6000);
+}
 $('backBtn').addEventListener('click', prevWord);
 
 // 🐍 Try again later: put this word back a few words ahead, then move on
@@ -2518,8 +2557,7 @@ function applyType() {
 }
 $('panel').addEventListener('submit', e => {
   e.preventDefault();
-  applyDraft();
-  $('sheet').hidden = true;                          // the words don't change here: carry on with the word on screen
+  closeSheet();                                      // the words don't change here: carry on with the word on screen
 });
 // heart marks: Irregulars -> its own permanent marks; By phoneme -> UFLI-style marks; Common words -> permanent marks;
 // custom lists -> the sight-word marks, then the UFLI-style and Irregulars marks, each with its By phoneme drop points
@@ -2600,12 +2638,16 @@ $('resetGoalBtn').addEventListener('click', () => {
   applyDraft();
   $('sheet').hidden = true; openStart();
 });
-$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('panel').requestSubmit(); });
+// close Settings (keeping its changes). Not form.requestSubmit(): iPhones and iPads before iOS 16 don't have it,
+// so the backdrop tap and "Change lesson" threw an error there and Settings stayed open.
+function closeSheet() { applyDraft(); $('sheet').hidden = true; }
+$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
 // the one place to choose the lesson is the lesson screen: Settings closes (keeping its changes) and the lesson screen opens;
 // like "pick another lesson" from the review card, today's goal and score are kept and the words follow straight on
 $('unitLabel').addEventListener('click', () => { pickFromReview = true; openLesson(); });
 $('changeLessonBtn').addEventListener('click', () => {
-  $('panel').requestSubmit();
+  closeSheet();
   pickFromReview = true; openLesson();
 });
 
@@ -3118,7 +3160,7 @@ $('wcPicks').addEventListener('click', e => {
   if (LESSONS.some(x => x.level === p.level && x.unit === p.unit)) setLesson(p.level, p.unit);
   openStart();                                    // the Ready card: this lesson, and how many words today
 });
-$('welcomeLink').addEventListener('click', e => { e.preventDefault(); showWelcome(); });
+$('welcomeLink').addEventListener('click', e => { e.preventDefault(); closeSheet(); showWelcome(); });   // Settings closes, so picking a start doesn't land back in it
 if (FIRST_VISIT && !OPENED_WITH_LINK && !(base && base.words) && !Object.keys(others || {}).length && !score) showWelcome();
 (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => { if (!current) nextWord(); else layout(); });
 </script>
