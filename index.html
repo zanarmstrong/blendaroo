@@ -1001,7 +1001,7 @@ let savedS = {};
 try { savedS = JSON.parse(localStorage.getItem('slideRead.settings') || '{}') || {}; } catch (e) {}
 if (typeof savedS === 'object') Object.assign(S, savedS);
 // first visit on this device: nothing saved yet. The welcome card shows, and the first lesson is the CVC review.
-const OPENED_WITH_LINK = /^#p=/.test(location.hash);   // a progress link from another device: a returning reader, so no welcome card over the "Add it" question
+const OPENED_WITH_LINK = /^#p=/.test(location.hash) || /[?&]list=/.test(location.search);   // a progress link, or a teacher's list link: no welcome card over the "Add it" question
 const FIRST_VISIT = (() => { try { return !['slideRead.settings', 'slideRead.progress', 'slideRead.session', 'slideRead.welcomed'].some(k => localStorage.getItem(k)); } catch (e) { return false; } })();
 if (FIRST_VISIT) { S.level = 'u'; S.unit = 5.8; }
 if (!S.bdOff19) { S.bd = false; S.bdOff19 = true; }   // once: outlines were on for everyone by default; now off, turn on in Settings
@@ -1389,7 +1389,7 @@ const escH = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;'
 function customMsg(t, oops) { const m = $('customMsg'); m.hidden = !t; m.innerHTML = t || ''; m.classList.toggle('oops', !!oops); }
 function renderCustom() {
   $('customLists').innerHTML = CUSTOM.map((L, i) => `<div class="cl-item"><span><b>${escH(L.name)}</b> · ${L.lessons.length} lesson${L.lessons.length === 1 ? '' : 's'}</span>`
-    + (L.src ? `<button type="button" class="ls-link" data-reload="${i}">Reload from the sheet</button>` : '')
+    + (L.src ? `<button type="button" class="ls-link" data-reload="${i}">Reload from the sheet</button><button type="button" class="ls-link" data-share="${i}">Copy share link</button>` : '')
     + `<button type="button" class="ls-link" data-rm="${i}">Remove</button></div>`).join('');
   $('customAdd').hidden = CUSTOM.length >= 2;
   if (CUSTOM.length >= 2) $('customLists').insertAdjacentHTML('beforeend', '<p class="xfer-note">That’s the most lists (two). Remove one to add another.</p>');
@@ -1458,6 +1458,11 @@ $('customLists').addEventListener('click', async e => {
   if (b.dataset.rm != null) {
     const i = +b.dataset.rm, nm = CUSTOM[i].name;
     CUSTOM.splice(i, 1); saveCustom(); customChanged({ removed: i }); customMsg(`Removed ${escH(nm)}.`);
+  } else if (b.dataset.share != null) {
+    const i = +b.dataset.share, L = CUSTOM[i], here = S.level === CUSTOM_LV[i] ? `&n=${S.unit}` : '';
+    const url = `${siteUrl()}?list=${encodeURIComponent(L.src)}&name=${encodeURIComponent(L.name)}${here}`;
+    openXfer('copylink', { title: `Share “${L.name}”`, text: 'Anyone who opens this link is asked to add the list, then starts on '
+      + (here ? 'the lesson open now' : 'its first lesson') + '. The sheet stays shared as “Anyone with the link”, so they can also see the sheet.', box: url, readOnly: true, go: 'Copy link', cancel: 'Done' });
   } else if (b.dataset.reload != null) {
     const i = +b.dataset.reload; customMsg('Loading…');
     try { addCustom(await fetchSheet(CUSTOM[i].src), null, CUSTOM[i].src, i); } catch (err) { customMsg(escH(err.message), true); }
@@ -3093,11 +3098,18 @@ async function offerImport(code) {
   return true;
 }
 $('xfGo').addEventListener('click', async () => {
-  if (xfMode === 'copy') {
+  if (xfMode === 'copy' || xfMode === 'copylink') {
     const box = $('xfBox'); let ok = false;
     try { await navigator.clipboard.writeText(box.value); ok = true; } catch (e) { box.select(); try { ok = document.execCommand('copy'); } catch (e2) {} }
-    $('xfMsg').textContent = ok ? 'Copied! Now paste it somewhere safe.' : 'Select the link and copy it.';
-    if (ok) markBackup();
+    $('xfMsg').textContent = !ok ? 'Select the link and copy it.' : xfMode === 'copy' ? 'Copied! Now paste it somewhere safe.' : 'Copied! Send it to the other family or teacher.';
+    if (ok && xfMode === 'copy') markBackup();
+  } else if (xfMode === 'list' && xfData) {
+    const { src, name, n } = xfData; $('xfGo').disabled = true; $('xfMsg').classList.remove('oops'); $('xfMsg').textContent = 'Loading the list…';
+    try {
+      addCustom(await fetchSheet(src), name, src);
+      closeXfer(); openListLesson(CUSTOM.length - 1, n);
+    } catch (err) { $('xfMsg').textContent = err.message; $('xfMsg').classList.add('oops'); }
+    $('xfGo').disabled = false;
   } else if (xfMode === 'paste') {
     const m = $('xfBox').value.match(/#p=([\w-]+)/) || $('xfBox').value.trim().match(/^([zj][\w-]{8,})$/);
     if (!m || !(await offerImport(m[1]))) { $('xfMsg').textContent = 'That doesn’t look like a progress link.'; $('xfMsg').classList.add('oops'); }
@@ -3125,6 +3137,27 @@ async function checkLink() {
   await offerImport(m[1]);
 }
 window.addEventListener('hashchange', checkLink);
+// opened from a list link (?list=<Google Sheet link>&name=<name>&n=<lesson>): ask before adding it; a list already here
+// just opens its lesson. The list's words stay in the sheet: anyone with the link can see them, nothing else is shared.
+const sameSheet = (a, b) => { const k = u => { const m = (u || '').match(/spreadsheets\/d\/(?:e\/)?([\w-]+)/); return m ? m[1] + '#' + ((u.match(/[#&?]gid=(\d+)/) || [])[1] || '0') : u; }; return k(a) === k(b); };
+function openListLesson(i, n) {
+  const lv = CUSTOM_LV[i], have = LESSONS.filter(x => x.level === lv);
+  const at = have.find(x => x.unit === n) || have[0]; if (!at) return;
+  setLesson(lv, at.unit); openStart();
+}
+function checkListLink() {
+  let q; try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  const src = q.get('list'); if (!src) return;
+  const name = (q.get('name') || 'Shared list').replace(/[\u0000-\u001f<>]/g, '').slice(0, 40).trim() || 'Shared list', n = Math.floor(+q.get('n')) || 0;
+  ['list', 'name', 'n'].forEach(k => q.delete(k));
+  try { const t = q.toString(); window.history.replaceState(null, '', location.pathname + (t ? '?' + t : '') + location.hash); } catch (e) {}
+  if (!sheetCsvUrls(src)) return;
+  const have = CUSTOM.findIndex(L => L.src && sameSheet(L.src, src));
+  if (have >= 0) { openListLesson(have, n); return; }
+  if (CUSTOM.length >= 2) { openXfer('done', { title: 'Two lists already', text: `This device already has two lesson lists. To add “${name}”, remove one in Settings, then open the link again.`, cancel: 'OK' }); return; }
+  xfData = { src, name, n };
+  openXfer('list', { title: `Add the lesson list “${name}”?`, text: 'Someone shared a list of lessons with you. Blendaroo loads it from their Google Sheet and keeps it on this device. You can remove it any time in Settings.', go: 'Add it', cancel: 'Not now' });
+}
 
 // ---------- start ----------
 paintCustomButtons(); renderCustom();
@@ -3144,6 +3177,7 @@ applyType();
 openStart();   // regular visits: today's lesson and goal, one tap to start; "Change lesson" opens the full chooser
 updateBackup();
 checkLink();
+checkListLink();
 // ---------- welcome (first visit on this device, not opened with a progress link) ----------
 // the welcome's examples use the app's own word markup (sound dots and lines, the pink heart), so they look the same as in a lesson
 function wcWord(w, heartWord, lit) {
