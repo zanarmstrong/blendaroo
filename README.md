@@ -21,7 +21,7 @@ at build time. The build writes the website into `docs/`, which GitHub Pages pub
 | Build | `build_site.py` runs `build.py` (bakes in the data) then `build_web.py` (the website: page, offline worker, manifest) |
 | The published website | `docs/` (built: don't edit `index.html`, `sw.js` or `manifest.webmanifest` by hand) |
 | Icons, font, the picture for shared links | `docs/icons/`, `docs/fonts/`, `art/` (`node art/render.js` redraws `art/share.png`) |
-| Tests (browser tests with Playwright) | `tests/` (`node tests/run_tests.js`, or name tests: `node tests/run_tests.js qa_find`) |
+| Tests (browser tests with Playwright) | `tests/` (`node tests/run_tests.js`, or name tests: `node tests/run_tests.js qa_find`); `tests/sample_list.csv` is a sample uploaded lesson list (`node tests/make_sample_list.js` remakes `sample_list.json` from it) |
 
 The word lists are made outside this repo, from dictionaries and research data with their own terms and from hand-checked
 lists, so they are not regenerated here. To suggest a change to the words (a word that's wrong, missing or shouldn't be
