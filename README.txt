@@ -1,5 +1,5 @@
-Blendaroo: website files
-========================
+Sound by Sound: website files
+=============================
 © 2026 Zan Armstrong. Free for non-commercial use under the PolyForm Noncommercial License 1.0.0
 (https://polyformproject.org/licenses/noncommercial/1.0.0). Families, schools and charities may use it freely; selling it or using it in a paid product is not allowed.
 Andika font © SIL Global, used under the SIL Open Font License 1.1 (see fonts/OFL.txt).
@@ -9,9 +9,10 @@ Files
 - sw.js                  lets the app open with no internet once it has been opened once
 - manifest.webmanifest   name and icons for "Add to Home Screen"
 - icons/                 app icons
+- audio/                 the recorded voice, one clip per word
 - fonts/                 Andika (SIL Open Font License, see fonts/OFL.txt)
 - LICENSE                the licence (PolyForm Noncommercial 1.0.0)
-- CNAME                  the web address for GitHub Pages: blendaroo.zanarmstrong.com (keep it when uploading a new version)
+- CNAME                  the web address for GitHub Pages: soundbysound.app (keep it when uploading a new version)
 
 Add to the home screen
 - iPhone / iPad (Safari): Share button > Add to Home Screen.

@@ -1,18 +1,18 @@
 <!doctype html>
-<!-- Blendaroo. © 2026 Zan Armstrong. PolyForm Noncommercial License 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0). Andika font © SIL Global, SIL Open Font License 1.1 (fonts/OFL.txt). -->
+<!-- Sound by Sound. © 2026 Zan Armstrong. PolyForm Noncommercial License 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0). Andika font © SIL Global, SIL Open Font License 1.1 (fonts/OFL.txt). -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="author" content="Zan Armstrong">
 <meta name="copyright" content="© 2026 Zan Armstrong. PolyForm Noncommercial License 1.0.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Blendaroo</title>
+<title>Sound by Sound</title>
 <meta name="description" content="Slide your finger under the word and blend the sounds: reading practice for beginning readers.">
 <meta name="theme-color" content="#f5f7fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a2a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Blendaroo">
+<meta name="apple-mobile-web-app-title" content="Sound by Sound">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -701,7 +701,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     <button class="btn" type="button" id="addGo">Add</button>
     <p class="add-msg" id="addMsg" aria-live="polite"></p>
     <div class="add-list" id="addList"></div>
-    <p class="add-tip" id="addTip" hidden>Blendaroo sorts each word as decodable or a heart word for this lesson. For heart words, tap letters to change which get the pink heart. Use the switch beside a word if it sorted one wrong.</p>
+    <p class="add-tip" id="addTip" hidden>Sound by Sound sorts each word as decodable or a heart word for this lesson. For heart words, tap letters to change which get the pink heart. Use the switch beside a word if it sorted one wrong.</p>
     <p class="add-tip">Added words always come up in this lesson. They’re kept on this device.</p>
     <button class="btn primary" type="button" id="addDone">Done</button>
   </div>
@@ -749,7 +749,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 </div>
 <div class="cover" id="welcomeCover" style="z-index:10" hidden>
   <div class="card welcome" role="dialog" aria-labelledby="wcTitle">
-    <h2 id="wcTitle">Welcome to Blendaroo</h2>
+    <h2 id="wcTitle">Welcome to Sound by Sound</h2>
     <p class="wc-sub">Flashcards for reading words by sounding them out.</p>
     <ul class="wc-list">
       <li><span class="wc-ex wc-slide" aria-hidden="true"><span id="wcSlide"></span><span class="wc-track"><span class="wc-trail"></span><span class="wc-bead">›</span></span></span>
@@ -907,7 +907,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
         <button class="btn" type="button" id="voiceTry">Try it: <i>sulled</i></button></details></div>
     <label class="check"><input type="checkbox" id="bdChk"> Outline b and d</label>
     <label class="check"><input type="checkbox" id="hsChk"> Make heart letters pink</label>
-    <div class="tip"><span class="lbl">How to help your reader learn with Blendaroo</span>
+    <div class="tip"><span class="lbl">How to help your reader learn with Sound by Sound</span>
       <p>Ask the reader to sound out each sound as they slide their finger. Encourage them to keep their voice going without stopping: “mmmaaap.” After sounding out the word and hearing what they said, they should say it again fast.</p>
       <p>The words include three types: “decodable,” “made-up” (but following typical decodable rules), and “heart words.”</p>
       <p>A heart word has a part that doesn’t follow the rules taught so far. That part gets a heart and a pink dot or line: it’s learned “by heart,” and the rest is sounded out as usual. Many heart words come in families (<i>could, would, should</i>). This is a common approach in structured-literacy teaching. To practice them, choose the “Heart words” lessons.</p>
@@ -924,7 +924,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
         <div class="cl-link"><input type="url" id="customUrl" placeholder="or paste a Google Sheet link" autocomplete="off"><button class="btn" type="button" id="customLoad">Load</button></div>
       </div>
       <p class="cl-msg" id="customMsg" hidden></p>
-      <p class="xfer-note">One lesson per row. The first row names the columns: <b>name</b>, <b>pattern</b>, <b>decodable</b>, <b>made-up</b> and <b>heart words</b>. Only decodable is needed. Words can be split by commas or spaces. Leave made-up empty and Blendaroo picks made-up words from the By phoneme lessons with the same pattern. A lesson with fewer than 30 decodable words is topped up with real words from those lessons. Heart words get their hearts from Blendaroo’s own lists. For Excel or Numbers, export as CSV first. A Google Sheet must be shared as “Anyone with the link”. Lists stay on this device. <button type="button" class="ls-link cl-tpl" id="customTpl">Download a template</button></p></div>
+      <p class="xfer-note">One lesson per row. The first row names the columns: <b>name</b>, <b>pattern</b>, <b>decodable</b>, <b>made-up</b> and <b>heart words</b>. Only decodable is needed. Words can be split by commas or spaces. Leave made-up empty and Sound by Sound picks made-up words from the By phoneme lessons with the same pattern. A lesson with fewer than 30 decodable words is topped up with real words from those lessons. Heart words get their hearts from Sound by Sound’s own lists. For Excel or Numbers, export as CSV first. A Google Sheet must be shared as “Anyone with the link”. Lists stay on this device. <button type="button" class="ls-link cl-tpl" id="customTpl">Download a template</button></p></div>
     <div class="row backup" id="backupRow"><span class="lbl">Backup</span>
       <p class="bk-status" id="bkStatus"></p>
       <div class="xfer-btns"><button class="btn" type="button" id="backupBtn">Save a backup</button></div>
@@ -942,8 +942,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 </div>
 
 <script>
-// Blendaroo app script. Sections, in order (search for "// ---------- <name>"):
+// Sound by Sound app script. Sections, in order (search for "// ---------- <name>"):
 //   word data (built in by build.py)
+//   moving from the old address (blendaroo.zanarmstrong.com), before anything reads the store
 //   settings
 //   sound chunks (letters that make one sound)
 //   word deck
@@ -994,14 +995,35 @@ function knows(ord, f, u, c) {
 const $ = id => document.getElementById(id);
 const VOW = 'aeiouy';
 
+// ---------- moving from the old address ----------
+// blendaroo.zanarmstrong.com now forwards here with everything it had saved after "#move=" (base64url JSON:
+// { v: 1, k: { 'slideRead.<name>': '<stored text>' } }), and an old progress link's code after "&p=".
+// A device with nothing saved here takes all of it as is, before anything below reads the store.
+// A device that already has progress here gets the question "Add it?" later (offerMove, after the start).
+let MOVED = null;   // what the old address sent, when this device already had its own progress here
+const OPENED_WITH_MOVE = /^#move=/.test(location.hash);
+(function takeMove() {
+  const m = location.hash.match(/^#move=([\w-]*)(?:&p=([\w-]+))?/); if (!m) return;
+  try { window.history.replaceState(null, '', location.pathname + location.search + (m[2] ? '#p=' + m[2] : '')); } catch (e) {}
+  let d = null;
+  try { d = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)))); } catch (e) { return; }
+  if (!d || d.v !== 1 || !d.k || typeof d.k !== 'object') return;
+  const k = {}; Object.entries(d.k).forEach(([n, v]) => { if (/^slideRead\.\w{1,30}$/.test(n) && typeof v === 'string' && v.length < 500000) k[n] = v; });
+  if (!Object.keys(k).length) return;
+  let here = true;
+  try { here = ['slideRead.deviceRecord', 'slideRead.progress', 'slideRead.imported', 'slideRead.custom', 'slideRead.session'].some(n => localStorage.getItem(n)); } catch (e) { return; }
+  if (!here) { try { Object.entries(k).forEach(([n, v]) => localStorage.setItem(n, v)); } catch (e) {} return; }
+  MOVED = k;
+})();
+
 // ---------- settings ----------
-const DEFAULTS = { level: 'u', unit: 5, kinds: ['real', 'made'], cum: false, goal: 20, bd: false, hstroke: false, voice: 'rec' };   // b/d outlines off by default
+const DEFAULTS ={ level: 'u', unit: 5, kinds: ['real', 'made'], cum: false, goal: 20, bd: false, hstroke: false, voice: 'rec' };   // b/d outlines off by default
 let S = { ...DEFAULTS };
 let savedS = {};
 try { savedS = JSON.parse(localStorage.getItem('slideRead.settings') || '{}') || {}; } catch (e) {}
 if (typeof savedS === 'object') Object.assign(S, savedS);
 // first visit on this device: nothing saved yet. The welcome card shows, and the first lesson is the CVC review.
-const OPENED_WITH_LINK = /^#p=/.test(location.hash) || /[?&]list=/.test(location.search);   // a progress link, or a teacher's list link: no welcome card over the "Add it" question
+const OPENED_WITH_LINK = OPENED_WITH_MOVE || /^#p=/.test(location.hash) || /[?&]list=/.test(location.search);   // a progress link, or a teacher's list link: no welcome card over the "Add it" question
 const FIRST_VISIT = (() => { try { return !['slideRead.settings', 'slideRead.progress', 'slideRead.session', 'slideRead.welcomed'].some(k => localStorage.getItem(k)); } catch (e) { return false; } })();
 if (FIRST_VISIT) { S.level = 'u'; S.unit = 5.8; }
 if (!S.bdOff19) { S.bd = false; S.bdOff19 = true; }   // once: outlines were on for everyone by default; now off, turn on in Settings
@@ -1470,7 +1492,7 @@ $('customLists').addEventListener('click', async e => {
 });
 $('customTpl').addEventListener('click', () => {
   const t = 'name,pattern,decodable,made-up,heart words\n"Short a","a","cat, map, sad, ran, bag, ham","","the, a, is"\n"ild, old, ind","ild old ind","wild, child, cold, told, find, kind","","said, was"\n';
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv' })); a.download = 'Blendaroo-custom-list-template.csv';
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv' })); a.download = 'Sound-by-Sound-custom-list-template.csv';
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 });
 
@@ -1993,7 +2015,7 @@ function addRender() {
   const note = w => { const n = ad.set[w] ? 'you chose' : (classify(w, ls.level, ls.unit).why || ''); return n === 'decodable' || n === 'a heart word' ? '' : n; };   // only when it adds something
   const switchBtn = (w, to) => `<button type="button" class="add-sw" data-w="${escH(w)}" data-to="${to}">${to === 'real' ? 'make decodable' : 'make it a heart word'}</button>`;
   $('addList').innerHTML =
-      ad.ask.map(w => `<div class="add-row ask"><span class="add-letters"><span class="plain">${escH(w)}</span></span><span class="add-q">Blendaroo doesn’t know this word. It’s:</span>
+      ad.ask.map(w => `<div class="add-row ask"><span class="add-letters"><span class="plain">${escH(w)}</span></span><span class="add-q">Sound by Sound doesn’t know this word. It’s:</span>
         <button type="button" class="btn add-pick" data-w="${escH(w)}" data-to="real">Decodable</button><button type="button" class="btn add-pick" data-w="${escH(w)}" data-to="trick">Heart word</button>
         <button type="button" class="add-x" data-w="${escH(w)}" data-k="ask" aria-label="Remove ${escH(w)}">×</button></div>`).join('')
     + ad.trick.map(w => { const f = marksToFlags(w, ad.marks[w]);
@@ -2027,7 +2049,7 @@ $('addGo').addEventListener('click', () => {
   });
   $('addBox').value = '';
   const parts = [c.trick && `${c.trick} heart word${c.trick === 1 ? '' : 's'}`, c.real && `${c.real} decodable`, c.ask && `${c.ask} to ask you about`].filter(Boolean);
-  $('addMsg').textContent = 'Added: ' + parts.join(', ') + '.' + (c.ask ? ' Tell Blendaroo what the new ones are, below.' : '');
+  $('addMsg').textContent = 'Added: ' + parts.join(', ') + '.' + (c.ask ? ' Tell Sound by Sound what the new ones are, below.' : '');
   addChanged();
 });
 $('addList').addEventListener('click', e => {
@@ -2358,17 +2380,17 @@ function deviceKind() {
 const VOICE_STEPS = {
   ios: ['Open the <b>Settings</b> app.', 'Tap <b>Accessibility</b> → <b>Spoken Content</b> → <b>Voices</b> → <b>English</b>.',
         'Pick a voice marked <b>Enhanced</b> or <b>Premium</b> (Ava or Zoe are good) and tap the download button. It’s a large download, so use Wi-Fi.',
-        'Come back to Blendaroo and reload it. It uses the better voice on its own.'],
-  mac: ['Easiest: open Blendaroo in <b>Chrome</b>, which has Google’s clear US English voice.',
+        'Come back to Sound by Sound and reload it. It uses the better voice on its own.'],
+  mac: ['Easiest: open Sound by Sound in <b>Chrome</b>, which has Google’s clear US English voice.',
         'Or, for Safari: <b>System Settings</b> → <b>Accessibility</b> → <b>Spoken Content</b> → <b>System voice</b> → <b>Manage Voices…</b>',
-        'Download an English voice marked <b>Enhanced</b> or <b>Premium</b> (Ava or Zoe are good), then reload Blendaroo.'],
-  android: ['Open <b>Settings</b> → <b>Accessibility</b> → <b>Text-to-speech output</b>.', 'Choose <b>Speech Services by Google</b>, then download a US English voice.', 'Reload Blendaroo.'],
-  other: ['On a computer, Blendaroo sounds clearest in <b>Chrome</b>, which has Google’s US English voice.', 'Or install a better English voice in your device’s text-to-speech settings, then reload Blendaroo.'],
+        'Download an English voice marked <b>Enhanced</b> or <b>Premium</b> (Ava or Zoe are good), then reload Sound by Sound.'],
+  android: ['Open <b>Settings</b> → <b>Accessibility</b> → <b>Text-to-speech output</b>.', 'Choose <b>Speech Services by Google</b>, then download a US English voice.', 'Reload Sound by Sound.'],
+  other: ['On a computer, Sound by Sound sounds clearest in <b>Chrome</b>, which has Google’s US English voice.', 'Or install a better English voice in your device’s text-to-speech settings, then reload Sound by Sound.'],
 };
 function showVoiceHelp() {
   document.querySelectorAll('#voiceSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.voice === 'device' ? 'device' : 'rec'))));
   if (S.voice !== 'device') {   // recorded clips: the device's voice only says words that have none (some uploaded words)
-    $('curVoice').innerHTML = 'A recorded voice says every word in Blendaroo’s lessons, as written. Words without a recording (some in uploaded lists) use this device’s voice.';
+    $('curVoice').innerHTML = 'A recorded voice says every word in Sound by Sound’s lessons, as written. Words without a recording (some in uploaded lists) use this device’s voice.';
     $('voiceHelp').hidden = true; return;
   }
   const synth = window.speechSynthesis, v = synth && pickVoice();
@@ -3064,9 +3086,9 @@ function updateBackup() {
 async function shareProgress(kind) {
   const url = siteUrl() + '#p=' + await encodeProgress(progressPayload());
   const backup = kind === 'backup', d = new Date();
-  const title = backup ? `Blendaroo backup ${d.toLocaleDateString()}` : 'Blendaroo progress';
-  const text = backup ? `Blendaroo backup (${pl(P.words, 'word')}, ${d.toLocaleDateString()}). To get this progress back, open this link on the device.`
-    : 'Blendaroo progress: open this link on the other device.';
+  const title = backup ? `Sound by Sound backup ${d.toLocaleDateString()}` : 'Sound by Sound progress';
+  const text = backup ? `Sound by Sound backup (${pl(P.words, 'word')}, ${d.toLocaleDateString()}). To get this progress back, open this link on the device.`
+    : 'Sound by Sound progress: open this link on the other device.';
   if (navigator.share) {
     try { await navigator.share({ title, text, url }); markBackup(); return; }
     catch (e) { if (e && e.name === 'AbortError') return; }   // cancelled; otherwise fall back to copying
@@ -3076,7 +3098,7 @@ async function shareProgress(kind) {
     : { title: 'Send to another device', text: 'Copy this link and send it to the other device. Open it there to add this progress.', box: url, readOnly: true, go: 'Copy link', cancel: 'Done' });
 }
 $('backupBtn').addEventListener('click', () => shareProgress('backup'));
-const openPaste = () => openXfer('paste', { title: 'Add from a link', text: 'Paste a Blendaroo progress link.', box: '', go: 'Next', cancel: 'Cancel' });
+const openPaste = () => openXfer('paste', { title: 'Add from a link', text: 'Paste a Sound by Sound progress link.', box: '', go: 'Next', cancel: 'Cancel' });
 $('addLinkBtn').addEventListener('click', openPaste);
 $('lsAddLink').addEventListener('click', openPaste);
 async function offerImport(code) {
@@ -3111,6 +3133,10 @@ $('xfGo').addEventListener('click', async () => {
     } catch (err) { $('xfMsg').textContent = err.message; $('xfMsg').classList.add('oops'); }
     $('xfGo').disabled = false;
   } else if (xfMode === 'paste') {
+    const mv = $('xfBox').value.match(/#move=([\w-]+)/);
+    if (mv) { let k = null; try { k = JSON.parse(new TextDecoder().decode(unb64u(mv[1]))).k; } catch (e) {}
+      if (!k || !offerMove(k)) { $('xfMsg').textContent = k ? 'This device already has everything in that link.' : 'That doesn’t look like a progress link.'; $('xfMsg').classList.toggle('oops', !k); }
+      return; }
     const m = $('xfBox').value.match(/#p=([\w-]+)/) || $('xfBox').value.trim().match(/^([zj][\w-]{8,})$/);
     if (!m || !(await offerImport(m[1]))) { $('xfMsg').textContent = 'That doesn’t look like a progress link.'; $('xfMsg').classList.add('oops'); }
   } else if (xfMode === 'confirm' && xfData) {
@@ -3124,8 +3150,14 @@ $('xfGo').addEventListener('click', async () => {
       if (!$('lessonCover').hidden) openLesson();
       else if ($('startCover').hidden) { warmedUp = true; warmUp(nextWord); }
     }
+    const lists = xfData.lists || []; let listMsg = '';
+    if (lists.length) {
+      const n0 = CUSTOM.length; CUSTOM.push(...lists);
+      if (saveCustom()) { customChanged({ add: n0 }); renderCustom(); listMsg = ` ${lists.length === 1 ? 'The lesson list is' : 'The lesson lists are'} in Change lesson.`; }
+      else { CUSTOM.splice(n0); listMsg = ' The lesson list couldn’t be saved: this device’s storage is full.'; }
+    }
     const t = summary(xfData.add);
-    openXfer('done', { title: 'Added!', text: `${pl(t.words, 'word')} added. My collection now shows ${pl(P.words, 'word')} in all.`, cancel: 'OK' });
+    openXfer('done', { title: 'Added!', text: (t.words ? `${pl(t.words, 'word')} added. My collection now shows ${pl(P.words, 'word')} in all.` : '') + listMsg, cancel: 'OK' });
   }
 });
 $('xfCancel').addEventListener('click', closeXfer);
@@ -3137,6 +3169,29 @@ async function checkLink() {
   await offerImport(m[1]);
 }
 window.addEventListener('hashchange', checkLink);
+// moving from the old address onto a device that already has progress here: its records (like a progress link) and
+// any lesson list not here yet (while there's room for two). Nothing new: no question.
+function offerMove(k) {
+  const J = n => { try { return JSON.parse(k[n] || 'null'); } catch (e) { return null; } };
+  const r = {}, put = recs => Object.entries(recs && typeof recs === 'object' ? recs : {}).forEach(([id, x]) => { if (x && (!r[id] || (+x.updated || 0) >= (+r[id].updated || 0))) r[id] = x; });
+  put(J('slideRead.imported')); put(J('slideRead.others'));
+  const dev = J('slideRead.device'), rec = J('slideRead.deviceRecord');
+  if (typeof dev === 'string' && rec) r[dev] = rec;
+  const b = J('slideRead.progress');
+  if (b && typeof b.words === 'number') r.base = { words: b.words, real: b.real, made: b.made, trick: b.trick, earned: b.aliens || {}, spent: b.spent || {}, golden: b.golden || [], updated: b.updated || 1 };
+  const add = incoming({ r }), key = L => L.src || L.name + '|' + JSON.stringify(L.lessons);
+  const have = new Set(CUSTOM.map(key)), lists = [];
+  (Array.isArray(J('slideRead.custom')) ? J('slideRead.custom') : []).forEach(L => {
+    if (L && L.name && Array.isArray(L.lessons) && !have.has(key(L)) && CUSTOM.length + lists.length < 2) { lists.push(L); have.add(key(L)); }
+  });
+  if (!Object.keys(add).length && !lists.length) return false;
+  const t = summary(add), parts = [];
+  if (t.words) { parts.push(pl(t.words, 'word'), pl(Math.max(0, t.aliens), 'alien')); if (t.golden) parts.push(pl(t.golden, 'golden alien')); }
+  if (lists.length) parts.push(lists.length === 1 ? `the lesson list “${lists[0].name}”` : `the lesson lists “${lists[0].name}” and “${lists[1].name}”`);
+  xfData = { add, lists };
+  openXfer('confirm', { title: 'Bring your progress from the old address?', text: `Sound by Sound moved here from blendaroo.zanarmstrong.com. This adds ${parts.join(', ')} from there to this device.`, go: 'Add it', cancel: 'Not now' });
+  return true;
+}
 // opened from a list link (?list=<Google Sheet link>&name=<name>&n=<lesson>): ask before adding it; a list already here
 // just opens its lesson. The list's words stay in the sheet: anyone with the link can see them, nothing else is shared.
 const sameSheet = (a, b) => { const k = u => { const m = (u || '').match(/spreadsheets\/d\/(?:e\/)?([\w-]+)/); return m ? m[1] + '#' + ((u.match(/[#&?]gid=(\d+)/) || [])[1] || '0') : u; }; return k(a) === k(b); };
@@ -3156,7 +3211,7 @@ function checkListLink() {
   if (have >= 0) { openListLesson(have, n); return; }
   if (CUSTOM.length >= 2) { openXfer('done', { title: 'Two lists already', text: `This device already has two lesson lists. To add “${name}”, remove one in Settings, then open the link again.`, cancel: 'OK' }); return; }
   xfData = { src, name, n };
-  openXfer('list', { title: `Add the lesson list “${name}”?`, text: 'Someone shared a list of lessons with you. Blendaroo loads it from their Google Sheet and keeps it on this device. You can remove it any time in Settings.', go: 'Add it', cancel: 'Not now' });
+  openXfer('list', { title: `Add the lesson list “${name}”?`, text: 'Someone shared a list of lessons with you. Sound by Sound loads it from their Google Sheet and keeps it on this device. You can remove it any time in Settings.', go: 'Add it', cancel: 'Not now' });
 }
 
 // ---------- start ----------
@@ -3176,8 +3231,7 @@ updateMineBtn();
 applyType();
 openStart();   // regular visits: today's lesson and goal, one tap to start; "Change lesson" opens the full chooser
 updateBackup();
-checkLink();
-checkListLink();
+if (!(MOVED && offerMove(MOVED))) { checkLink(); checkListLink(); }   // (a progress or list link that came along with a move question waits for the next opening)
 // ---------- welcome (first visit on this device, not opened with a progress link) ----------
 // the welcome's examples use the app's own word markup (sound dots and lines, the pink heart), so they look the same as in a lesson
 function wcWord(w, heartWord, lit) {
