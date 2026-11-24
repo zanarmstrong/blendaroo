@@ -7,7 +7,19 @@
 <meta name="copyright" content="© 2026 Zan Armstrong. PolyForm Noncommercial License 1.0.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sound by Sound</title>
-<meta name="description" content="Slide your finger under the word and blend the sounds: reading practice for beginning readers.">
+<meta name="description" content="Sound it out, one sound at a time. Phonics practice for beginning readers: slide a finger under the word and blend the sounds.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sound by Sound">
+<meta property="og:title" content="Sound by Sound">
+<meta property="og:description" content="Sound it out, one sound at a time. Phonics practice for beginning readers.">
+<meta property="og:url" content="https://soundbysound.app/">
+<meta property="og:image" content="https://soundbysound.app/share.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sound by Sound: the word chicken, lit up one sound at a time as a yellow bead slides under it, with lines under ch and ck.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://soundbysound.app/">
 <meta name="theme-color" content="#f5f7fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a2a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -77,6 +89,10 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .tbtn:hover { background: color-mix(in srgb, var(--soft) 10%, transparent); }
 .tbtn:focus-visible { outline: 2px solid var(--sky); outline-offset: 1px; }
 .score { margin-left: auto; }
+/* today's goal as a thin bar along the bottom edge of the top bar: it sits in the bar's own padding, so it takes no room */
+.top { position: relative; }
+.goalbar { position: absolute; left: 6px; right: 6px; bottom: 2px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--soft) 16%, transparent); overflow: hidden; pointer-events: none; }
+.goalbar i { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--grass); transition: width .4s ease; }
 .score { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 
 /* goal + celebration cards */
@@ -399,15 +415,20 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 /* back · (ear over tricky) · next */
 #doneRow { align-items: center; flex-wrap: nowrap; flex-shrink: 0; }
 #doneRow.off #sayBtn { opacity: .35; pointer-events: none; }   /* 👂 waits for the whole word */
-#doneRow .mid-stack { display: grid; gap: 10px; }
-#doneRow .mid-stack .ibtn { height: 60px; }
+#doneRow .mid-stack { display: contents; }   /* one row: back · hear · tricky · next */
 #againBtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 #againBtn .mini { width: .75em; height: .5em; color: var(--soft); }
-#backBtn { color: var(--soft); }
-#backBtn:disabled { opacity: .35; }
 .btn.ibtn { display: inline-grid; place-items: center; height: 72px; min-width: 96px; padding: 0 22px; font-size: 2.1rem; line-height: 1; }
-.btn.ibtn.primary { min-width: 132px; }
-#againBtn { color: var(--soft); }
+/* back: the quiet one, an arrow with no button shape (still a full-size tap area) */
+#backBtn { color: var(--soft); background: none; border-color: transparent; min-width: 64px; padding: 0 8px; opacity: .75; }
+#backBtn:disabled { opacity: .25; }
+/* hear: a round button */
+#sayBtn { min-width: 0; width: 72px; padding: 0; }
+/* tricky: dashed, so it reads as "not now" rather than a main choice */
+#againBtn { color: var(--soft); border-style: dashed; }
+/* next: the one big button, pressing down like the bead */
+.btn.ibtn.primary { min-width: 150px; box-shadow: 0 5px 0 color-mix(in srgb, var(--grass) 60%, #000); transition: transform .08s, box-shadow .08s; }
+.btn.ibtn.primary:active { transform: translateY(4px); box-shadow: 0 1px 0 color-mix(in srgb, var(--grass) 60%, #000); }
 .btn {
   border-radius: 999px; border: 2px solid var(--groove-edge); background: var(--card);
   padding: 10px 28px; font-size: 1.3rem; font-weight: 700;
@@ -422,7 +443,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .creature figcaption { text-align: center; font-family: var(--f-word); font-size: .95rem; line-height: 1.1; }
 @media (max-height: 600px) {   /* phone held sideways, or a short computer window: tighten so everything fits without overlapping */
   .btn.ibtn { height: 50px; min-width: 70px; padding: 0 14px; font-size: 1.5rem; }
-  .btn.ibtn.primary { min-width: 96px; }
+  .btn.ibtn.primary { min-width: 108px; }
+  #sayBtn { width: 50px; }
+  #backBtn { min-width: 52px; }
   .stage { gap: 6px; padding-block: 2px 8px; }
   .track { height: 60px; border-radius: 30px; }
   .bead { width: 48px; height: 48px; margin: -24px 0 0 -24px; font-size: 1.3rem; }
@@ -433,8 +456,6 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
   .stage { padding-block: 0 4px; }
   .btn { padding: 6px 20px; font-size: 1.1rem; }
   .done-row { gap: 8px; }
-  #doneRow .mid-stack { display: flex; gap: 8px; }   /* sideways phone: no room to stack, keep one row */
-  #doneRow .mid-stack .ibtn { height: 50px; }
 }
 @media (max-width: 420px) {   /* small phones: the goal picker and cards fit the width */
   .card { padding: 24px 18px; gap: 18px; }
@@ -445,14 +466,30 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 @media (max-width: 600px) {   /* phones: smaller buttons so the word gets the room */
   .btn.ibtn { height: 56px; min-width: 76px; padding: 0 16px; font-size: 1.7rem; }
   .btn.ibtn.primary { min-width: 104px; }
-  #doneRow .mid-stack { gap: 8px; }
-  #doneRow .mid-stack .ibtn { height: 50px; }
+  #sayBtn { width: 56px; }
+  #backBtn { min-width: 48px; padding: 0 4px; }
+  #againBtn { padding: 0 12px; min-width: 0; }
   .btn { padding: 5px 16px; font-size: 1rem; border-width: 1.5px; }
   .done-row { gap: 8px; }
   .hint { font-size: 1.1rem; }
   .slate { padding-inline: 22px; }   /* narrower sides so long words can be bigger */
   .track { height: 70px; border-radius: 35px; }
   .bead { width: 52px; height: 52px; margin: -26px 0 0 -26px; font-size: 1.35rem; }
+}
+@media (max-width: 370px) {   /* the smallest phones (320 wide): the four buttons still fit in one row */
+  .done-row { gap: 4px; }
+  #backBtn { min-width: 44px; padding: 0; }
+  #sayBtn { width: 50px; height: 50px; }
+  #againBtn { padding: 0 8px; height: 50px; }
+  .btn.ibtn.primary { min-width: 86px; padding: 0 12px; }
+}
+@media (min-width: 700px) and (min-height: 700px) {   /* tablets and big windows: groove, bead and buttons a bit bigger (the word too, in layout()) */
+  .track { height: 96px; border-radius: 48px; }
+  .bead { width: 74px; height: 74px; margin: -37px 0 0 -37px; font-size: 1.8rem; }
+  .btn.ibtn { height: 80px; font-size: 2.3rem; }
+  #sayBtn { width: 80px; }
+  .btn.ibtn.primary { min-width: 168px; }
+  .done-row { gap: 18px; }
 }
 @keyframes hop { 0% { transform: translateY(30px) scale(.6); opacity: 0; } 70% { transform: translateY(-6px) scale(1.04); opacity: 1; } 100% { transform: none; } }
 
@@ -632,6 +669,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     <button class="tbtn mine" id="mineBtn" type="button" aria-label="My collection" title="My collection"><span class="mine-ic" id="mineIc"></span></button>
     <button class="tbtn unit" id="unitLabel" type="button" aria-label="Choose a lesson"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 6.6C9.4 4.6 6.2 4.3 3 5.4v13.2c3.2-1.1 6.4-.8 9 1.2 2.6-2 5.8-2.3 9-1.2V5.4c-3.2-1.1-6.4-.8-9 1.2zM12 6.6v13.2"/></svg></button>
     <div class="score" aria-live="polite"><span id="scoreNum">0 / 20</span></div>
+    <div class="goalbar" aria-hidden="true"><i id="goalFill"></i></div>
   </header>
   <main class="stage" id="stage">
     <div class="slate" id="slate">
@@ -1673,7 +1711,8 @@ function layout() {
   const phone = stage.clientWidth < 600;
   const pad = parseFloat(getComputedStyle(slate).paddingLeft) || 40;
   const avail = stage.clientWidth - (phone ? 0 : 40);
-  let fs = Math.max(40, Math.min(180, stage.clientWidth * 0.15, stage.clientHeight * (innerHeight < 520 ? 0.2 : 0.26)));
+  const big = !phone && innerWidth >= 700 && innerHeight >= 700;   // tablets (and big windows): a bit bigger, so the screen isn't mostly empty
+  let fs = Math.max(40, big ? Math.min(210, stage.clientWidth * 0.17, stage.clientHeight * 0.3) : Math.min(180, stage.clientWidth * 0.15, stage.clientHeight * (innerHeight < 520 ? 0.2 : 0.26)));
   if (phone) {
     // phones: make the word fill the width (short words capped so they don't get silly-big)
     const m = document.createElement('canvas').getContext('2d');
@@ -1899,6 +1938,7 @@ function restoreSession() {
 }
 function updateGoal() {
   $('scoreNum').textContent = `${score} / ${goal}`;
+  $('goalFill').style.width = Math.min(100, goal ? 100 * score / goal : 0) + '%';   // the thin bar under the top bar
 }
 function minGoal() { return Math.max(5, Math.ceil((score + 1) / 5) * 5); }
 function setGoalShown(v) {

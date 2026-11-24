@@ -9,6 +9,7 @@ Files
 - sw.js                  lets the app open with no internet once it has been opened once
 - manifest.webmanifest   name and icons for "Add to Home Screen"
 - icons/                 app icons
+- share.png              the picture shown when a link to the site is shared (1200 x 630)
 - audio/                 the recorded voice, one clip per word
 - fonts/                 Andika (SIL Open Font License, see fonts/OFL.txt)
 - LICENSE                the licence (PolyForm Noncommercial 1.0.0)
