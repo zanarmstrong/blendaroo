@@ -1,0 +1,6 @@
+# made by the build or the tests
+slide-and-read.html
+test-output/
+node_modules/
+__pycache__/
+.DS_Store

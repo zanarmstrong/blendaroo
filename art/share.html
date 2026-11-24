@@ -1,0 +1,52 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Andika; src: url(../docs/fonts/Andika-Regular.ttf); }
+@font-face { font-family: Andika; font-weight: 700; src: url(../docs/fonts/Andika-Bold.ttf); }
+:root { --paper: #f5f7fb; --ink: #1d2740; --soft: #5c6884; --grass: #3a9356; --bead: #f1b42c; --bead-ink: #3b2a05; --groove: #e2e8f2; --groove-edge: #cfd8e6; --plane: #a9b6cc; }
+html, body { margin: 0; }
+body { width: 1200px; height: 630px; background: var(--paper); font-family: Andika, sans-serif; color: var(--ink); position: relative; overflow: hidden; }
+.logo { position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 700; }
+.logo img { width: 56px; height: 56px; border-radius: 14px; }
+h1 { position: absolute; left: 64px; top: 146px; width: 580px; margin: 0; font-size: 76px; line-height: 1.08; font-weight: 700; letter-spacing: -.5px; }
+.sub { position: absolute; left: 64px; top: 430px; width: 580px; margin: 0; font-size: 28px; line-height: 1.3; color: var(--soft); }
+.url { position: absolute; left: 64px; bottom: 44px; font-size: 26px; font-weight: 700; color: var(--grass); }
+.card { position: absolute; right: 56px; top: 110px; width: 490px; height: 410px; background: #fff; border-radius: 36px; box-shadow: 0 10px 30px #1d27401a; }
+.word { position: absolute; left: 0; right: 0; top: 92px; display: flex; justify-content: center; gap: 12px; font-size: 92px; line-height: 1; }
+.word span { position: relative; }
+.word .hide { color: transparent; }   /* the app's default: a letter shows only when the bead reaches it */
+.marks { position: absolute; left: 0; right: 0; top: 222px; height: 20px; }
+.dot { position: absolute; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--ink); }
+.dot.dim { background: var(--plane); }
+.line { position: absolute; height: 6px; top: 6px; border-radius: 3px; background: var(--ink); }
+.track { position: absolute; left: 40px; right: 40px; top: 290px; height: 84px; border-radius: 42px; background: var(--groove); box-shadow: inset 0 3px 0 var(--groove-edge); }
+.trail { position: absolute; left: 0; top: 0; bottom: 0; width: 190px; border-radius: 42px; background: #f1b42c59; }
+.bead { position: absolute; top: 10px; left: 148px; width: 64px; height: 64px; border-radius: 50%; background: var(--bead); box-shadow: 0 4px 0 #85631a; display: grid; place-items: center; font-size: 30px; font-weight: 700; color: var(--bead-ink); }
+</style></head>
+<body>
+  <div class="logo"><img src="../docs/icons/icon-192.png" alt="">Sound by Sound</div>
+  <h1>Sound it out,<br>one sound<br>at a time.</h1>
+  <p class="sub">Phonics practice<br>for beginning readers.</p>
+  <div class="url">soundbysound.app</div>
+  <div class="card">
+    <div class="word" id="word"><span data-s="1">c</span><span data-s="1">h</span><span data-s="2">i</span><span data-s="3">c</span><span data-s="3">k</span><span data-s="4">e</span><span data-s="5" class="hide">n</span></div>
+    <div class="marks" id="marks"></div>
+    <div class="track"><div class="trail" id="trail"></div><div class="bead" id="bead">›</div></div>
+  </div>
+<script>
+// marks under each sound, placed from the letters' real positions: chicken: ch and ck are one sound each (a line under both letters and one dot), then one dot per letter
+document.fonts.ready.then(() => {
+  const card = document.querySelector('.card').getBoundingClientRect(), m = document.getElementById('marks');
+  const c = id => { const r = document.getElementById(id).getBoundingClientRect(); return { l: r.left - card.left, r: r.right - card.left, m: (r.left + r.right) / 2 - card.left }; };
+  // group letters into sounds (data-s): one dot per sound; a sound of two letters (ch) also gets a line under both letters
+  const els = [...document.querySelectorAll('#word span')], groups = {};
+  els.forEach(e => { const r = e.getBoundingClientRect(); (groups[e.dataset.s] ||= []).push({ l: r.left - card.left, r: r.right - card.left, hide: e.classList.contains('hide') }); });
+  const sounds = Object.values(groups).map(g => ({ l: g[0].l, r: g[g.length - 1].r, m: (g[0].l + g[g.length - 1].r) / 2, n: g.length, hide: g[0].hide }));
+  m.innerHTML = sounds.map(o => (o.n > 1 ? `<div class="line" style="left:${o.l + 4}px;width:${o.r - o.l - 8}px"></div>` : '') + `<div class="dot${o.hide ? ' dim' : ''}" style="left:${o.m}px"></div>`).join('');
+  // the bead has just passed the e: its centre at the e's right edge (the track starts 40px into the card)
+  const x = sounds[3].r - 40;
+  document.getElementById('bead').style.left = (x - 32) + 'px'; document.getElementById('trail').style.width = (x + 32) + 'px';
+  document.body.dataset.ready = '1';
+});
+</script>
+</body></html>
