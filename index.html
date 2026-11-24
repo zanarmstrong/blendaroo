@@ -306,6 +306,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .btn.gold { background: var(--gold); border-color: var(--gold); color: var(--bead-ink); }
 .btn:disabled { opacity: .45; }
 .empty-note { color: var(--soft); font-family: var(--f-word); text-align: left; margin: 0; }
+.pile-grid > .empty-note { grid-column: 1 / -1; }   /* the whole row, not one 104px column */
 @keyframes shine { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.1); } }
 .sparkle { animation: shine 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 7; }
@@ -500,10 +501,6 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
   box-sizing: border-box; display: grid; gap: 16px; max-height: 100%; overflow: auto; font-size: 1.05rem;
 }
 .panel h2 { margin: 0; font-size: 1.6rem; line-height: 1.1; }
-/* Settings is long (Done was ~3000px down on a phone): keep a way out pinned at the top while scrolling */
-.panel-head { position: sticky; top: -24px; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin: -24px -24px 0; padding: 16px 24px 12px; background: var(--card); border-bottom: 1.5px solid var(--groove-edge); }
-.panel-head .btn { padding: 4px 18px; }
 .sheet { -webkit-overflow-scrolling: touch; }
 .panel { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; max-height: calc(100dvh - 32px); }
 .row { display: grid; gap: 6px; }
@@ -654,6 +651,40 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .goal-line span { font-weight: 700; }
 .goal-line .btn { padding: 4px 16px; font-size: 1rem; }
 
+/* ---------- screens: Settings, collection, lesson chooser, word lists, add words, privacy, about ----------
+   All alike: a title bar pinned at the top with ✕ at the right (Escape and a tap outside also close).
+   On a computer they float as a card; on a phone they fill the screen. Celebrations and the Ready card stay as pop-ups. */
+.sheet { background: color-mix(in srgb, var(--paper) 82%, transparent); }   /* same backdrop as the other screens */
+.card.scr, .panel.scr { --px: 28px; --pb: 28px; padding: 0 var(--px) var(--pb); align-content: start; }
+@media (max-width: 420px) { .card.scr, .panel.scr { --px: 18px; } }
+.scr-head { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 12px; justify-self: stretch; align-self: start;
+  margin: 0 calc(-1 * var(--px)); padding: 14px 12px 12px var(--px); background: var(--card); border-bottom: 1.5px solid var(--groove-edge); }
+.card .scr-head h2, .panel .scr-head h2 { flex: 1; min-width: 0; margin: 0; text-align: left; font-size: clamp(1.4rem, 4vw, 1.8rem); line-height: 1.15; }
+.x-btn { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; padding: 0;
+  background: var(--paper); color: var(--ink); cursor: pointer; }
+.x-btn:hover { background: color-mix(in srgb, var(--soft) 18%, var(--paper)); }
+.x-btn:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+.card.scr .ls-go { bottom: calc(-1 * var(--pb)); margin: -8px calc(-1 * var(--px)) calc(-1 * var(--pb)); padding: 12px var(--px) var(--pb); }
+.card.collection.scr > .space-btn { margin-top: -4px; }
+@media (max-width: 600px) {
+  .cover.full, .sheet { padding: 0; place-items: stretch; grid-template-columns: 100%; grid-template-rows: 100%; }
+  .cover.full > .card, .sheet > .panel { width: 100%; height: 100%; max-height: none; border-radius: 0; box-shadow: none; animation: none; }
+  .card.scr, .panel.scr { --pb: calc(20px + env(safe-area-inset-bottom)); padding-inline: max(var(--px), env(safe-area-inset-left)) max(var(--px), env(safe-area-inset-right)); }
+  .scr-head { padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: 8px; }
+  .card.welcome { align-content: start; padding-top: calc(24px + env(safe-area-inset-top)); padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 600px) and (prefers-reduced-motion: no-preference) {
+  .cover.full:not([hidden]) > .card, .sheet:not([hidden]) > .panel { animation: slide-up .25s ease-out; }
+}
+@keyframes slide-up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
+/* Settings: grouped into boxes with a small heading each */
+.panel .grp { display: grid; gap: 14px; padding: 14px 16px 16px; border: 1.5px solid var(--groove-edge); border-radius: 18px; }
+.panel .grp > h3 { margin: 0 0 -4px; font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--soft); }
+.panel .grp > h3 ~ * + * { border-top: 1.5px solid var(--groove-edge); padding-top: 14px; }
+.panel .grp > .checks { display: grid; gap: 10px; }
+.panel .grp .tip > .lbl { font-size: 1rem; }
+.panel .grp .backup.due { margin: 0 -8px; }
+
 @media (prefers-reduced-motion: reduce) {
   .ch.on, .creature { animation: none; }
   .track.idle .bead { animation: none; }
@@ -694,9 +725,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
   </main>
 </div>
 
-<div class="cover" id="lessonCover" hidden>
-  <div class="card lesson">
-    <h2>Choose a lesson</h2>
+<div class="cover full" id="lessonCover" hidden>
+  <div class="card lesson scr">
+    <div class="scr-head"><h2>Choose a lesson</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
     <div class="row"><span class="lbl">Lesson order</span>
       <div class="seg big" id="lsTrack">
         <button type="button" data-v="u">By phoneme</button>
@@ -730,9 +761,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     <div class="ls-go"><button class="btn primary" type="button" id="lsNext">Use this lesson <svg viewBox="0 0 48 32" width="1.2em" height=".8em" aria-hidden="true"><path d="M4 16h34M27 5l12 11-12 11" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   </div>
 </div>
-<div class="cover" id="addCover" style="z-index:7" hidden role="dialog" aria-modal="true" aria-labelledby="addTitle">
-  <div class="card add-card">
-    <h2 id="addTitle">Add words</h2>
+<div class="cover full" id="addCover" style="z-index:7" hidden role="dialog" aria-modal="true" aria-labelledby="addTitle">
+  <div class="card add-card scr">
+    <div class="scr-head"><h2 id="addTitle">Add words</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
     <p class="add-for" id="addFor"></p>
     <div class="row"><label for="addBox">Words to add (from the teacher’s list)</label>
       <textarea id="addBox" rows="2" placeholder="said, friend, because" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea></div>
@@ -741,7 +772,6 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     <div class="add-list" id="addList"></div>
     <p class="add-tip" id="addTip" hidden>Sound by Sound sorts each word as decodable or a heart word for this lesson. For heart words, tap letters to change which get the pink heart. Use the switch beside a word if it sorted one wrong.</p>
     <p class="add-tip">Added words always come up in this lesson. They’re kept on this device.</p>
-    <button class="btn primary" type="button" id="addDone">Done</button>
   </div>
 </div>
 <div class="cover" id="startCover" hidden>
@@ -779,13 +809,13 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     <button class="btn ibtn primary" type="button" id="warmGo" aria-label="Next"><svg viewBox="0 0 48 32" width="1.6em" height="1.07em" aria-hidden="true"><path d="M4 16h34M27 5l12 11-12 11" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
 </div>
-<div class="cover" id="aboutCover" style="z-index:9" hidden>
-  <div class="card">
-    <h2>Work in progress</h2>
-    <button class="btn primary" type="button" id="aboutClose">Back</button>
+<div class="cover full" id="aboutCover" style="z-index:9" hidden>
+  <div class="card scr">
+    <div class="scr-head"><h2>About</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
+    <p>Work in progress.</p>
   </div>
 </div>
-<div class="cover" id="welcomeCover" style="z-index:10" hidden>
+<div class="cover full" id="welcomeCover" style="z-index:10" hidden>
   <div class="card welcome" role="dialog" aria-labelledby="wcTitle">
     <h2 id="wcTitle">Welcome to Sound by Sound</h2>
     <p class="wc-sub">Flashcards for reading words by sounding them out.</p>
@@ -820,21 +850,20 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     </div>
   </div>
 </div>
-<div class="cover" id="privacyCover" style="z-index:9" hidden>
-  <div class="card privacy">
-    <h2>Privacy</h2>
+<div class="cover full" id="privacyCover" style="z-index:9" hidden>
+  <div class="card privacy scr">
+    <div class="scr-head"><h2>Privacy</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
     <p><b>This app doesn’t collect anything about you or your child.</b> There are no accounts, names, email addresses, ads, cookies or analytics.</p>
     <p><b>What it saves, and where.</b> Words read, aliens collected, lesson settings and today’s session are saved in this browser, on this device only.</p>
     <p><b>Backup and transfer links.</b> These links hold that same progress (word counts, alien names, the lesson). They go only where you send them. The progress is in the part of the link after “#”, which browsers don’t send to the website.</p>
     <p><b>Hear it.</b> The ear button uses your device’s built-in voice. On some devices and browsers, those voices are provided online by the device or browser maker.</p>
     <p><b>The website.</b> Like any website, the host may keep standard visit logs (such as IP addresses).</p>
     <p><b>Deleting.</b> Remove the app from the home screen, or clear this site’s data in your browser settings. That deletes everything it saved.</p>
-    <button class="btn primary" type="button" id="privacyClose">Back</button>
   </div>
 </div>
-<div class="cover" id="wordsCover" style="z-index:9" hidden>
-  <div class="card wl">
-    <h2>Word lists</h2>
+<div class="cover full" id="wordsCover" style="z-index:9" hidden>
+  <div class="card wl scr">
+    <div class="scr-head"><h2>Word lists</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
     <div class="seg" id="wlTrack">
       <button type="button" data-v="u">By phoneme</button>
       <button type="button" data-v="h">Heart words</button>
@@ -846,7 +875,6 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
       <button type="button" class="btn wl-step" id="wlNext" aria-label="Next lesson">›</button>
     </div>
     <div class="wl-body" id="wlBody"></div>
-    <button class="btn primary" type="button" id="wlClose">Back</button>
   </div>
 </div>
 <div class="cover" id="reviewCover" hidden>
@@ -886,9 +914,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     </div>
   </div>
 </div>
-<div class="cover" id="mineCover" hidden>
-  <div class="card collection">
-    <h2 id="mineTitle">My collection</h2>
+<div class="cover full" id="mineCover" hidden>
+  <div class="card collection scr">
+    <div class="scr-head"><h2 id="mineTitle">My collection</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
     <button class="btn space-btn" type="button" id="spaceBtn"><span aria-hidden="true">🪐</span> My solar system</button>
     <div class="stats">
       <div class="stat big"><b id="stTotal">0</b><span>words read</span></div>
@@ -911,7 +939,6 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
       <button class="btn" type="button" id="tradeBtn">Trade 10 for a golden alien</button>
       <button class="btn" type="button" id="tradeCancel" hidden>Cancel</button>
       <button class="btn gold" type="button" id="tradeGo" hidden>Make my golden alien!</button>
-      <button class="btn primary" type="button" id="mineClose">Back to reading</button>
     </div>
   </div>
 </div>
@@ -926,8 +953,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 <canvas id="confetti" hidden></canvas>
 
 <div class="sheet" id="sheet" hidden>
-  <form class="panel" id="panel">
-    <div class="panel-head"><h2>Settings</h2><button class="btn primary" type="submit">Done</button></div>
+  <form class="panel scr" id="panel">
+    <div class="scr-head"><h2>Settings</h2><button class="x-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
+    <section class="grp"><h3>Reading</h3>
     <div class="row"><span class="lbl">Lesson</span>
       <p class="cur-lesson" id="curLesson"></p>
       <button class="btn" type="button" id="changeLessonBtn">Change lesson</button></div>
@@ -935,34 +963,17 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
       <div class="cw daily"><span class="cw-val" id="dailyVal">20 words</span><input type="range" id="dailyRange" min="10" max="100" step="10" aria-label="Daily goal, in words"><span class="cw-ends" aria-hidden="true"><span>10</span><span>100</span></span></div>
       <p class="xfer-note">How many words each day starts with. The reader can still pick another number before starting.</p></div>
     <div class="row"><span class="lbl">Today’s goal</span>
-      <div class="goal-line"><span id="goalNow"></span><button class="btn" type="button" id="resetGoalBtn">Change</button></div></div>
+      <div class="goal-line"><span id="goalNow"></span><button class="btn" type="button" id="resetGoalBtn">Change</button></div></div></section>
+    <section class="grp"><h3>Look and sound</h3>
     <div class="row"><span class="lbl">Dark mode</span>
       <div class="seg" id="themeSeg"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button></div></div>
+    <div class="row checks"><label class="check"><input type="checkbox" id="bdChk"> Outline b and d</label><label class="check"><input type="checkbox" id="hsChk"> Make heart letters pink</label></div>
     <div class="row voice-row"><span class="lbl">👂 voice</span>
       <div class="seg" id="voiceSeg"><button type="button" data-v="rec">Recorded voice</button><button type="button" data-v="device">Device voice</button></div>
       <p class="cur-voice" id="curVoice"></p>
       <details class="voice-help" id="voiceHelp"><summary>Get a clearer voice</summary><ol class="voice-steps" id="voiceSteps"></ol>
-        <button class="btn" type="button" id="voiceTry">Try it: <i>sulled</i></button></details></div>
-    <label class="check"><input type="checkbox" id="bdChk"> Outline b and d</label>
-    <label class="check"><input type="checkbox" id="hsChk"> Make heart letters pink</label>
-    <div class="tip"><span class="lbl">How to help your reader learn with Sound by Sound</span>
-      <p>Ask the reader to sound out each sound as they slide their finger. Encourage them to keep their voice going without stopping: “mmmaaap.” After sounding out the word and hearing what they said, they should say it again fast.</p>
-      <p>The words include three types: “decodable,” “made-up” (but following typical decodable rules), and “heart words.”</p>
-      <p>A heart word has a part that doesn’t follow the rules taught so far. That part gets a heart and a pink dot or line: it’s learned “by heart,” and the rest is sounded out as usual. Many heart words come in families (<i>could, would, should</i>). This is a common approach in structured-literacy teaching. To practice them, choose the “Heart words” lessons.</p>
-      <p>Many curricula also refer to “sight,” “sticky,” or “trick” words. These are typically a mix of common heart words and other common words that are “decodable” (spelled phonetically).</p>
-      <p>To focus on common words, choose “Common words” and select the word list to draw from (top 10 most common, top 60, top 200, etc.). Then you can select if you want to focus on common words that are “decodable,” “heart words,” or both.</p>
-      <p><a href="#" id="aboutLink">Learn more about the research behind this tool</a></p>
-      <p><a href="#" id="welcomeLink">Show the welcome screen</a></p>
-    </div>
-    <div class="row custom" id="customRow"><span class="lbl">Custom lesson lists</span>
-      <div class="cl-lists" id="customLists"></div>
-      <div class="cl-add" id="customAdd">
-        <input type="text" id="customName" placeholder="Name for the list" autocomplete="off">
-        <label class="btn cl-file">Upload a CSV file<input type="file" id="customFile" accept=".csv,.tsv,.txt,text/csv,text/plain" hidden></label>
-        <div class="cl-link"><input type="url" id="customUrl" placeholder="or paste a Google Sheet link" autocomplete="off"><button class="btn" type="button" id="customLoad">Load</button></div>
-      </div>
-      <p class="cl-msg" id="customMsg" hidden></p>
-      <p class="xfer-note">One lesson per row. The first row names the columns: <b>name</b>, <b>pattern</b>, <b>decodable</b>, <b>made-up</b> and <b>heart words</b>. Only decodable is needed. Words can be split by commas or spaces. Leave made-up empty and Sound by Sound picks made-up words from the By phoneme lessons with the same pattern. A lesson with fewer than 30 decodable words is topped up with real words from those lessons. Heart words get their hearts from Sound by Sound’s own lists. For Excel or Numbers, export as CSV first. A Google Sheet must be shared as “Anyone with the link”. Lists stay on this device. <button type="button" class="ls-link cl-tpl" id="customTpl">Download a template</button></p></div>
+        <button class="btn" type="button" id="voiceTry">Try it: <i>sulled</i></button></details></div></section>
+    <section class="grp"><h3>Progress</h3>
     <div class="row backup" id="backupRow"><span class="lbl">Backup</span>
       <p class="bk-status" id="bkStatus"></p>
       <div class="xfer-btns"><button class="btn" type="button" id="backupBtn">Save a backup</button></div>
@@ -973,8 +984,27 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
       </ol></div>
     <div class="row"><span class="lbl">Progress on another device</span>
       <div class="xfer-btns"><button class="btn" type="button" id="sendBtn">Send to another device</button><button class="btn" type="button" id="addLinkBtn">Add from a link</button></div>
-      <p class="xfer-note">Send the link to the other phone or tablet (AirDrop, Messages or email) and open it there. It adds this device’s words and aliens there.</p></div>
-    <button class="btn primary" type="submit">Done</button>
+      <p class="xfer-note">Send the link to the other phone or tablet (AirDrop, Messages or email) and open it there. It adds this device’s words and aliens there.</p></div></section>
+    <section class="grp"><h3>Your own word lists</h3>
+    <div class="row custom" id="customRow"><span class="lbl">Custom lesson lists</span>
+      <div class="cl-lists" id="customLists"></div>
+      <div class="cl-add" id="customAdd">
+        <input type="text" id="customName" placeholder="Name for the list" autocomplete="off">
+        <label class="btn cl-file">Upload a CSV file<input type="file" id="customFile" accept=".csv,.tsv,.txt,text/csv,text/plain" hidden></label>
+        <div class="cl-link"><input type="url" id="customUrl" placeholder="or paste a Google Sheet link" autocomplete="off"><button class="btn" type="button" id="customLoad">Load</button></div>
+      </div>
+      <p class="cl-msg" id="customMsg" hidden></p>
+      <p class="xfer-note">One lesson per row. The first row names the columns: <b>name</b>, <b>pattern</b>, <b>decodable</b>, <b>made-up</b> and <b>heart words</b>. Only decodable is needed. Words can be split by commas or spaces. Leave made-up empty and Sound by Sound picks made-up words from the By phoneme lessons with the same pattern. A lesson with fewer than 30 decodable words is topped up with real words from those lessons. Heart words get their hearts from Sound by Sound’s own lists. For Excel or Numbers, export as CSV first. A Google Sheet must be shared as “Anyone with the link”. Lists stay on this device. <button type="button" class="ls-link cl-tpl" id="customTpl">Download a template</button></p></div></section>
+    <section class="grp"><h3>About</h3>
+    <div class="tip"><span class="lbl">Helping your reader</span>
+      <p>Ask the reader to sound out each sound as they slide their finger. Encourage them to keep their voice going without stopping: “mmmaaap.” After sounding out the word and hearing what they said, they should say it again fast.</p>
+      <p>The words include three types: “decodable,” “made-up” (but following typical decodable rules), and “heart words.”</p>
+      <p>A heart word has a part that doesn’t follow the rules taught so far. That part gets a heart and a pink dot or line: it’s learned “by heart,” and the rest is sounded out as usual. Many heart words come in families (<i>could, would, should</i>). This is a common approach in structured-literacy teaching. To practice them, choose the “Heart words” lessons.</p>
+      <p>Many curricula also refer to “sight,” “sticky,” or “trick” words. These are typically a mix of common heart words and other common words that are “decodable” (spelled phonetically).</p>
+      <p>To focus on common words, choose “Common words” and select the word list to draw from (top 10 most common, top 60, top 200, etc.). Then you can select if you want to focus on common words that are “decodable,” “heart words,” or both.</p>
+      <p><a href="#" id="aboutLink">Learn more about the research behind this tool</a></p>
+      <p><a href="#" id="welcomeLink">Show the welcome screen</a></p>
+    </div></section>
     <p class="legal"><button type="button" class="ls-link" id="privacyLink">Privacy</button><br>© 2026 Zan Armstrong. Free for non-commercial use (<a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener">PolyForm Noncommercial License 1.0.0</a>).<br>“By phoneme” lessons: created to align with UFLI’s scope and sequence; not created or endorsed by UFLI.<br>Andika font by SIL Global, used under the SIL Open Font License.</p>
   </form>
 </div>
@@ -2076,7 +2106,6 @@ function putWord(ad, w, kind, mark) {   // into one kind, out of the others
   else ad.ask.push(w);
 }
 $('addOpen').addEventListener('click', () => { $('addMsg').textContent = ''; $('addBox').value = ''; addRender(); $('addCover').hidden = false; $('addBox').focus(); });
-$('addDone').addEventListener('click', () => { $('addCover').hidden = true; });
 $('addGo').addEventListener('click', () => {
   const words = [...new Set($('addBox').value.split(/[\s,;]+/).map(cleanWord).filter(Boolean))];
   if (!words.length) { $('addMsg').textContent = 'Type or paste some words first.'; return; }
@@ -2106,7 +2135,9 @@ $('addList').addEventListener('click', e => {
   }
   addChanged();
 });
-function openLesson() {
+let lsBack = null;   // what ✕ goes back to: reading, the Ready card, the review card or the welcome screen
+function openLesson(back) {
+  if (back !== undefined) lsBack = back;
   lsCommitted = false;
   Object.assign(ls, { level: S.level, unit: S.unit, kinds: [...S.kinds], cum: !!S.cum });
   $('lsLesson').innerHTML = lessonOptions(trackOf(ls.level));
@@ -2141,7 +2172,9 @@ function commitLs() {
   if (changed) { deck = []; passOn = false; passRead = []; current = null; history = []; lessonChanged = true; lsCommitted = true; }   // a fresh set of words for the new lesson
   return changed;
 }
+function closeLesson() { $('lessonCover').hidden = true; pickFromReview = false; const f = lsBack; lsBack = null; if (f) f(); }
 $('lsNext').addEventListener('click', () => {
+  lsBack = null;
   const changed = commitLs() || lsCommitted; lsCommitted = false;
   $('lessonCover').hidden = true;
   if (pickFromReview) {             // came from the review card: keep today's goal, go straight to the words
@@ -2171,7 +2204,7 @@ function openStart() {
 $('goalDown').addEventListener('click', () => setGoalShown(goal - 5));
 $('goalUp').addEventListener('click', () => setGoalShown(goal + 5));
 $('goalQuick').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setGoalShown(+b.dataset.v); });
-$('rdChange').addEventListener('click', () => { $('startCover').hidden = true; openLesson(); });
+$('rdChange').addEventListener('click', () => { $('startCover').hidden = true; openLesson(openStart); });
 $('rdWords').addEventListener('click', e => {
   if (!e.target.closest('#rdAll')) return;
   wlFill(trackOf(S.level), S.level + '-' + S.unit);
@@ -2259,7 +2292,7 @@ $('rvAgain').addEventListener('click', () => {
 $('rvPick').addEventListener('click', () => {
   $('reviewCover').hidden = true;
   pickFromReview = true;
-  openLesson();
+  openLesson(() => { $('reviewCover').hidden = false; });
 });
 $('tenBtn').addEventListener('click', () => { $('tenCover').hidden = true; nextWord(); });
 function celebrateGoal() {
@@ -2531,8 +2564,22 @@ $('againBtn').addEventListener('click', () => {
 });
 
 // keep iPad from scrolling or zooming the page while sliding
-document.addEventListener('touchmove', e => { if (!e.target.closest('.panel, .wordlist, .collection, .cover .card')) e.preventDefault(); }, { passive: false });
-document.addEventListener('gesturestart', e => e.preventDefault());
+const zoomed = () => !!window.visualViewport && visualViewport.scale > 1.01;
+document.addEventListener('touchmove', e => {
+  if (zoomed()) return;   // zoomed in by accident: let a pinch or a drag get back out
+  if (!e.target.closest('.panel, .wordlist, .collection, .cover .card')) e.preventDefault();
+}, { passive: false });
+document.addEventListener('gesturestart', e => { if (!zoomed()) e.preventDefault(); });
+// a stray double-tap (on iPhone, touch-action doesn't catch every one) used to leave the page stuck zoomed in:
+// snap back to normal size a moment later. Changing the viewport's maximum-scale makes Safari reset the zoom.
+(() => {
+  const vp = document.querySelector('meta[name=viewport]'); if (!vp || !window.visualViewport) return;
+  const base = vp.content; let t = 0;
+  visualViewport.addEventListener('resize', () => {
+    clearTimeout(t); if (!zoomed()) return;
+    t = setTimeout(() => { vp.content = base + ', maximum-scale=1'; setTimeout(() => { vp.content = base; }, 400); }, 600);
+  });
+})();
 
 // ---------- grown-ups sheet ----------
 // Changes are a draft until Done (or "Change" goal). Done only starts a new set of words if the words changed.
@@ -2700,11 +2747,8 @@ $('wlLesson').addEventListener('change', wlPaint);
 const wlStep = d => { const sel = $('wlLesson'); sel.selectedIndex = Math.max(0, Math.min(sel.options.length - 1, sel.selectedIndex + d)); wlPaint(); };
 $('wlPrev').addEventListener('click', () => wlStep(-1));
 $('wlNext').addEventListener('click', () => wlStep(1));
-$('wlClose').addEventListener('click', () => { $('wordsCover').hidden = true; });
 $('aboutLink').addEventListener('click', e => { e.preventDefault(); $('aboutCover').hidden = false; });
-$('aboutClose').addEventListener('click', () => { $('aboutCover').hidden = true; });
 $('privacyLink').addEventListener('click', () => { $('privacyCover').hidden = false; $('privacyCover').querySelector('.card').scrollTop = 0; });
-$('privacyClose').addEventListener('click', () => { $('privacyCover').hidden = true; });
 // daily goal: a slider, 10 to 100 in steps of 10; a goal set in the address (?goal=25) shows as is until moved
 function paintDaily() { $('dailyRange').value = String(S.goal); $('dailyVal').textContent = `${S.goal} words`; }
 $('dailyRange').addEventListener('input', e => {
@@ -2718,14 +2762,12 @@ $('resetGoalBtn').addEventListener('click', () => {
 // close Settings (keeping its changes). Not form.requestSubmit(): iPhones and iPads before iOS 16 don't have it,
 // so the backdrop tap and "Change lesson" threw an error there and Settings stayed open.
 function closeSheet() { applyDraft(); $('sheet').hidden = true; }
-$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeSheet(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
 // the one place to choose the lesson is the lesson screen: Settings closes (keeping its changes) and the lesson screen opens;
 // like "pick another lesson" from the review card, today's goal and score are kept and the words follow straight on
-$('unitLabel').addEventListener('click', () => { pickFromReview = true; openLesson(); });
+$('unitLabel').addEventListener('click', () => { pickFromReview = true; openLesson(() => {}); });
 $('changeLessonBtn').addEventListener('click', () => {
   closeSheet();
-  pickFromReview = true; openLesson();
+  pickFromReview = true; openLesson(() => {});
 });
 
 window.addEventListener('resize', () => { if (current) { layout(); if (!done) resetBeadKeep(); } });
@@ -2817,13 +2859,27 @@ function renderMine() {
   const n = pickedCount();
   $('tradeNote').textContent = picking ? `Tap aliens to pick 10 to trade. Picked ${n} of 10.`
     : total >= 10 ? 'You can trade 10 aliens for a golden alien!' : `Collect ${10 - total} more to trade for a golden alien.`;
-  $('tradeBtn').hidden = picking; $('tradeBtn').disabled = total < 10;
+  $('tradeBtn').hidden = picking || total < 10;   // the note above says how many more to collect
   $('tradeCancel').hidden = !picking; $('tradeGo').hidden = !picking; $('tradeGo').disabled = n !== 10;
-  $('mineClose').hidden = picking;
 }
-function openMine() { picking = false; picked = {}; renderMine(); $('mineCover').hidden = false; }
+function openMine() { picking = false; picked = {}; renderMine(); $('mineCover').hidden = false; $('mineCover').querySelector('.card').scrollTop = 0; }
 $('mineBtn').addEventListener('click', openMine);
-$('mineClose').addEventListener('click', () => { $('mineCover').hidden = true; });
+// ---------- screens (Settings, collection, lesson chooser, word lists...): one way out ----------
+// the ✕ in the title bar, Escape, or a tap outside the card (on a computer; on a phone the screen fills it)
+const SCREEN_CLOSE = {
+  sheet: () => closeSheet(),
+  lessonCover: () => closeLesson(),
+  mineCover: () => { picking = false; picked = {}; $('mineCover').hidden = true; },
+};
+function closeScreen(c) { if (c) (SCREEN_CLOSE[c.id] || (() => { c.hidden = true; }))(); }
+document.addEventListener('click', e => { const x = e.target.closest('.x-btn'); if (x) closeScreen(x.closest('.cover, .sheet')); });
+document.querySelectorAll('.cover.full, .sheet').forEach(c => c.addEventListener('click', e => { if (e.target === c && c.querySelector('.x-btn')) closeScreen(c); }));
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const open = [...document.querySelectorAll('.cover.full, .sheet')].filter(c => !c.hidden && c.querySelector('.x-btn'));
+  open.sort((a, b) => (+getComputedStyle(b).zIndex || 0) - (+getComputedStyle(a).zIndex || 0));
+  closeScreen(open[0]);
+});
 $('tradeBtn').addEventListener('click', () => { picking = true; picked = {}; renderMine(); });
 $('tradeCancel').addEventListener('click', () => { picking = false; picked = {}; renderMine(); });
 $('alienGrid').addEventListener('click', e => {
@@ -3291,7 +3347,7 @@ function showWelcome() {
     b.querySelector('span').textContent = (eg.length === 3 ? eg : p.level === 'c' ? ws.slice(0, 3) : ws.filter(w => w.length >= 3).slice(0, 3)).join(', ');
   }); $('welcomeCover').hidden = false; const c = document.querySelector('#welcomeCover .card'); c.scrollTop = 0; document.querySelector('.wc-pick').focus({ preventScroll: true }); }
 function closeWelcome() { $('welcomeCover').hidden = true; try { localStorage.setItem('slideRead.welcomed', '1'); } catch (e) {} }
-$('welcomeGo').addEventListener('click', () => { closeWelcome(); $('startCover').hidden = true; openLesson(); });   // the full lesson chooser
+$('welcomeGo').addEventListener('click', () => { closeWelcome(); $('startCover').hidden = true; openLesson(showWelcome); });   // the full lesson chooser
 $('wcPicks').addEventListener('click', e => {
   const b = e.target.closest('.wc-pick'); if (!b) return;
   const p = parseLesson(b.dataset.v); closeWelcome();
