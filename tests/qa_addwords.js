@@ -1,0 +1,47 @@
+// "+ Add words to this lesson": a parent adds a teacher's heart words (with hearts) and decodable words to a lesson
+const { chromium } = require('playwright');
+const { ok, openChooser, HTTP, OUT } = require('./qa_helpers');
+const path = require('path');
+(async () => { const SRV = await require('./qa_serve')();
+  const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 900, height: 900 } });
+  const pg = await ctx.newPage(); await pg.addInitScript(() => { try { localStorage.setItem('slideRead.welcomed', '1'); } catch (e) {} }); pg.on('pageerror', e => console.log('PAGEERR', e.message));
+  await pg.goto(SRV.base + 'slide-and-read.html'); await pg.waitForTimeout(400); await openChooser(pg);
+  await pg.selectOption('#lsLesson', 'u-45'); await pg.waitForTimeout(100);
+  await pg.click('#addOpen'); await pg.waitForTimeout(100);
+  ok('dialog opens for the chosen lesson', await pg.evaluate(() => !$('addCover').hidden && /sh/.test($('addFor').textContent)), await pg.evaluate(() => $('addFor').textContent));
+  await pg.fill('#addBox', 'said, friend glorp ship rain <img>'); await pg.click('#addGo'); await pg.waitForTimeout(100);
+  let r = await pg.evaluate(() => JSON.stringify(ADDED['u-45']));
+  ok('the app sorts known words itself: heart words with their hearts, decodable words, and asks about unknown ones', /"trick":\["said","friend","rain"\]/.test(r) && /"said":"s\[ai\]d"/.test(r) && /"rain":"r\[ai\]n"/.test(r) && /"real":\["ship"\]/.test(r) && /"ask":\["glorp","img"\]/.test(r), r);
+  r = await pg.evaluate(() => $('addMsg').textContent + ' | ' + [...document.querySelectorAll('.kind-tag small')].map(x => x.textContent).join(' / '));
+  ok('it says what it did and why', /3 heart words, 1 decodable, 2 to ask you about/.test(r) && /until By phoneme lesson 84/.test(r), r);
+  await pg.click('.add-pick[data-w="glorp"][data-to="trick"]'); await pg.waitForTimeout(80);
+  await pg.click('.add-letters button[data-w="glorp"][data-i="2"]'); await pg.waitForTimeout(80);
+  r = await pg.evaluate(() => ADDED['u-45'].marks.glorp); ok('an unknown word: answer "Irregular", then tap a letter for its heart', r === 'gl[o]rp', r);
+  await pg.click('.add-pick[data-w="img"][data-to="real"]'); await pg.waitForTimeout(80);
+  await pg.click('.add-sw[data-w="ship"]'); await pg.waitForTimeout(80);
+  r = await pg.evaluate(() => ({ t: ADDED['u-45'].trick.includes('ship'), why: [...document.querySelectorAll('.add-row')].find(x => x.textContent.includes('ship')).textContent }));
+  ok('a word can be switched to the other kind ("you chose")', r.t && /you chose/.test(r.why), JSON.stringify(r));
+  await pg.click('.add-sw[data-w="ship"]'); await pg.click('.add-x[data-w="img"]'); await pg.waitForTimeout(80);
+  r = await pg.evaluate(() => ADDED['u-45']);
+  ok('switch back; remove a word', r.real.join() === 'ship' && !r.trick.includes('img') && !r.ask.length, JSON.stringify(r));
+  await pg.screenshot({ path: OUT + '/addwords.png' });
+  await pg.click('#addCover .x-btn');
+  r = await pg.evaluate(() => ({ pv: $('lsPreview').textContent, n: $('lsCount').textContent }));
+  ok('lesson preview shows "Added by you"', /Added by you/.test(r.pv) && /said/.test(r.pv), r.pv.slice(0, 120));
+  // the words come up in practice, even though heart words aren't otherwise part of By phoneme lessons
+  r = await pg.evaluate(() => { const p = poolFor('u', 45, ['real', 'made'], false); return ['said', 'glorp', 'ship'].map(w => { const c = p.find(x => x.w === w); return c ? (c.trick ? 'heart' : 'plain') : 'missing'; }).join(); });
+  ok('added words are in the lesson (heart words as heart words)', r === 'heart,heart,plain', r);
+  await pg.click('#lsNext'); await pg.click('#startBtn'); if (await pg.isVisible('#warmSkip')) await pg.click('#warmSkip');
+  await pg.evaluate(() => { current = { w: 'glorp', trick: true, ord: 1045 }; setup(); }); await pg.waitForTimeout(300);
+  r = await pg.evaluate(() => [...document.querySelectorAll('#word .ch')].map(s => (s.classList.contains('heart') ? '♥' : '') + s.textContent).join(''));
+  ok('the word shows with the heart on the letters chosen', r === 'gl♥orp', r);
+  await pg.reload(); await pg.waitForTimeout(400); await openChooser(pg);
+  ok('added words survive a reload', await pg.evaluate(() => ADDED['u-45'] && ADDED['u-45'].marks.glorp === 'gl[o]rp'));
+  // damaged storage is ignored
+  const p2 = await ctx.newPage(); await p2.addInitScript(() => { try { localStorage.setItem('slideRead.welcomed', '1'); } catch (e) {} }); p2.on('pageerror', e => console.log('PAGEERR', e.message));
+  await p2.addInitScript(() => localStorage.setItem('slideRead.added', JSON.stringify({ 'u-45': { trick: ['<b>x', 7], marks: { x: '<script>' } }, 'bad key': {} })));
+  await p2.goto(SRV.base + 'slide-and-read.html'); await p2.waitForTimeout(400); await openChooser(p2);
+  r = await p2.evaluate(() => JSON.stringify(ADDED));
+  ok('odd saved data is cleaned, never shown', /^\{"u-45":\{/.test(r) && r.includes('"trick":["bx"]') && !r.includes('<') && !r.includes('bad key'), r);
+  await b.close(); SRV.close();
+})();

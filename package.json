@@ -1,0 +1,13 @@
+{
+  "name": "sound-by-sound",
+  "private": true,
+  "description": "Phonics practice for beginning readers: https://soundbysound.app",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "build": "python3 build_site.py",
+    "test": "node tests/run_tests.js"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

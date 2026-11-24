@@ -1,0 +1,24 @@
+// Search in the lesson chooser (Zan, Nov 23): a whole word finds every lesson that has it ("place" was not found before);
+// a pattern still finds lessons by name first, then by their words, now including lessons with just one such word.
+const { chromium } = require('playwright');
+const { ok, HTTP, openChooser, ROOT } = require('./qa_helpers');
+(async () => { const b = await chromium.launch(); const pg = await b.newPage(); pg.on('pageerror', e => console.log('PAGEERR', e.message));
+  await pg.addInitScript(() => { try { localStorage.setItem('slideRead.welcomed', '1'); } catch (e) {} });
+  await pg.goto(HTTP + ROOT + '/docs/index.html'); await pg.waitForTimeout(600);
+  await openChooser(pg);
+  await pg.fill('#findBox', 'place'); await pg.waitForTimeout(150);
+  let r = await pg.evaluate(() => [...document.querySelectorAll('#findOut button')].map(b => b.textContent));
+  ok('a word finds its lesson, and the smallest Common words list that has it', /ce says s/.test(r[0]) && /has the word “place”/.test(r[0]) && r.some(t => /Top 110 common words/.test(t)) && r.filter(t => /common words/.test(t)).length === 1, JSON.stringify(r));
+  await pg.fill('#findBox', 'said'); await pg.waitForTimeout(150);
+  r = await pg.evaluate(() => [...document.querySelectorAll('#findOut button')].map(b => b.textContent));
+  ok('a heart word is found too (its heart marks don\'t get in the way)', r.length && /has the word “said”/.test(r[0]), JSON.stringify(r.slice(0, 2)));
+  await pg.fill('#findBox', 'ild'); await pg.waitForTimeout(150);
+  r = await pg.evaluate(() => [...document.querySelectorAll('#findOut button')].map(b => b.textContent));
+  ok('a pattern: the lesson named for it first, then lessons with words that have it', /^ild, old/.test(r[0]) && r.length > 3, JSON.stringify(r.slice(0, 3)));
+  await pg.click('#findOut button'); await pg.waitForTimeout(200);
+  r = await pg.evaluate(() => $('lsLesson').value);
+  ok('picking a result opens that lesson', /^u-/.test(r), r);
+  await pg.fill('#findBox', 'zzqx'); await pg.waitForTimeout(150);
+  r = await pg.evaluate(() => $('findOut').textContent);
+  ok('nothing found says so', /No lessons found/.test(r), r);
+  await b.close(); })();
