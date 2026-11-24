@@ -2,7 +2,7 @@
 // Offline support. The page itself is fetched fresh when online (so updates arrive) and from the cache when offline;
 // fonts and icons come from the cache. A new version replaces the old cache. Word recordings (audio/) are kept in their
 // own cache once played, across versions, so a word heard online can be heard offline.
-const CACHE = 'slide-read-f513430103';
+const CACHE = 'slide-read-34514a6371';
 const FILES = ["./", "index.html", "manifest.webmanifest", "fonts/Andika-Regular.ttf", "fonts/Andika-Bold.ttf", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/icon-maskable-512.png"];
 const AUDIO = 'blendaroo-audio-v3';   // change the name whenever recordings are replaced (v3: Nov 21 re-recording + are, ant, be)
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
