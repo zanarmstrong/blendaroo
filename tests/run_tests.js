@@ -3,7 +3,7 @@
 // Exit code: number of failing tests (0 = all good).
 const path = require('path');
 const { spawnSync } = require('child_process');
-const SUITE = ['qa_welcome', 'qa_chooser', 'qa_find', 'qa_screens', 'qa_topbar', 'qa_move', 'qa_oldaddress', 'qa_oldsw', 'qa_iphone', 'qa_clips', 'qa_listlink', 'qa_addwords', 'qa_layout', 'qa_voicehelp', 'qa_voice', 'qa_upload', 'qa_uploadhearts', 'qa_blocked', 'qa_touch', 'qa_theme', 'qa_b4', 'qa_b1', 'qa24', 'qa_ufli', 'qa_wl', 'qa_heart', 'qa_common', 'qa_review', 'qa_resume', 'qa_uk'];
+const SUITE = ['qa_welcome', 'qa_chooser', 'qa_find', 'qa_screens', 'qa_light', 'qa_topbar', 'qa_move', 'qa_oldaddress', 'qa_oldsw', 'qa_iphone', 'qa_clips', 'qa_listlink', 'qa_addwords', 'qa_layout', 'qa_voicehelp', 'qa_voice', 'qa_upload', 'qa_uploadhearts', 'qa_blocked', 'qa_touch', 'qa_theme', 'qa_b4', 'qa_b1', 'qa24', 'qa_ufli', 'qa_wl', 'qa_heart', 'qa_common', 'qa_review', 'qa_resume', 'qa_uk'];
 const FLAKY = { qa24: 1 };   // known timing flake ("resume after reload"): one retry
 const pick = process.argv.slice(2);
 let bad = 0;

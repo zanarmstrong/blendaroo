@@ -384,6 +384,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .ch.heart::after { display: block !important; }
 .ch.heart.multi::after { display: none !important; }
 .word.hstroke .ch.heart.on { color: var(--pink); }   /* option: heart letters in pink (the red dot or line stays) */
+.word.lightpre .ch:not(.on) { color: color-mix(in srgb, var(--ink) 22%, var(--paper)); }   /* option (off by default): the whole word in light grey before sliding; each letter turns dark as the bead reaches it */
 .word.fade .ch.on .hrt { opacity: 0; transition: opacity .45s; }
 .word .ch.silent.on { color: color-mix(in srgb, var(--ink) 38%, var(--paper)); }   /* silent e: clearly faded next to the sounded letters (light and dark mode), no cross-out */
 .word.fade .ch.on { color: transparent; transition: color .45s; }
@@ -967,7 +968,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
     <section class="grp"><h3>Look and sound</h3>
     <div class="row"><span class="lbl">Dark mode</span>
       <div class="seg" id="themeSeg"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button></div></div>
-    <div class="row checks"><label class="check"><input type="checkbox" id="bdChk"> Outline b and d</label><label class="check"><input type="checkbox" id="hsChk"> Make heart letters pink</label></div>
+    <div class="row checks"><label class="check"><input type="checkbox" id="bdChk"> Outline b and d</label><label class="check"><input type="checkbox" id="hsChk"> Make heart letters pink</label><label class="check"><input type="checkbox" id="lightChk"> Show the whole word in light grey before sliding</label></div>
     <div class="row voice-row"><span class="lbl">👂 voice</span>
       <div class="seg" id="voiceSeg"><button type="button" data-v="rec">Recorded voice</button><button type="button" data-v="device">Device voice</button></div>
       <p class="cur-voice" id="curVoice"></p>
@@ -1085,7 +1086,7 @@ const OPENED_WITH_MOVE = /^#move=/.test(location.hash);
 })();
 
 // ---------- settings ----------
-const DEFAULTS ={ level: 'u', unit: 5, kinds: ['real', 'made'], cum: false, goal: 20, bd: false, hstroke: false, voice: 'rec' };   // b/d outlines off by default
+const DEFAULTS ={ level: 'u', unit: 5, kinds: ['real', 'made'], cum: false, goal: 20, bd: false, hstroke: false, light: false, voice: 'rec' };   // b/d outlines off by default
 let S = { ...DEFAULTS };
 let savedS = {};
 try { savedS = JSON.parse(localStorage.getItem('slideRead.settings') || '{}') || {}; } catch (e) {}
@@ -1101,6 +1102,8 @@ if (URL_BD !== null) S.bd = URL_BD;
 if (!S.pinkOff19) { S.hstroke = false; S.pinkOff19 = true; }   // once: pink heart letters off for everyone; turn on in Settings
 const URL_PINK = (() => { try { const v = new URLSearchParams(location.search).get('pink'); return v === '1' ? true : v === '0' ? false : null; } catch (e) { return null; } })();   // ?pink=1 / ?pink=0
 if (URL_PINK !== null) S.hstroke = URL_PINK;
+const URL_LIGHT = (() => { try { const v = new URLSearchParams(location.search).get('light'); return v === '1' ? true : v === '0' ? false : null; } catch (e) { return null; } })();   // ?light=1 / ?light=0
+if (URL_LIGHT !== null) S.light = URL_LIGHT;
 const URL_GOAL = (() => { try { const v = +new URLSearchParams(location.search).get('goal'); return Number.isInteger(v) && v >= 5 && v <= 200 ? v : null; } catch (e) { return null; } })();   // ?goal=20
 if (URL_GOAL !== null) S.goal = URL_GOAL;
 const URL_LESSON = (() => { try { const m = (new URLSearchParams(location.search).get('lesson') || '').match(/^([uhcf])-(\d+(?:\.\d+)?)$/); return m ? { level: m[1], unit: +m[2] } : null; } catch (e) { return null; } })();
@@ -1114,7 +1117,7 @@ function syncUrl() {   // the address carries the lesson, so copying it shares t
   try {
     const p = new URLSearchParams(location.search);
     if (isCustom(S.level)) p.delete('lesson'); else p.set('lesson', S.level + '-' + S.unit);
-    p.set('bd', S.bd ? '1' : '0'); p.set('pink', S.hstroke ? '1' : '0');   // b/d outlines on or off
+    p.set('bd', S.bd ? '1' : '0'); p.set('pink', S.hstroke ? '1' : '0'); if (S.light) p.set('light', '1'); else p.delete('light');   // b/d outlines on or off
     p.set('goal', String(S.goal || 20));   // the daily goal
     const q = p.toString().replace(/%2C/g, ','), url = location.pathname + (q ? '?' + q : '') + location.hash;
     if (url !== location.pathname + location.search + location.hash) window.history.replaceState(null, '', url);   // (the app's own 'history' is its list of words)
@@ -1726,6 +1729,7 @@ function setup() {
   resetBead();
   word.classList.toggle('trickmode', !!current.trick);
   word.classList.toggle('hstroke', !!S.hstroke); document.documentElement.classList.toggle('hpink', !!S.hstroke);
+  word.classList.toggle('lightpre', !!S.light);
   track.classList.toggle('gone', !!current.trick);
   if (current.trick) {
     spans.forEach(s => s.classList.add('on'));
@@ -2592,8 +2596,8 @@ function showCurLesson() {
 function syncPanel() {
   paintDaily();
   showVoiceHelp();
-  draft = { bd: !!S.bd, hs: !!S.hstroke };
-  $('bdChk').checked = draft.bd; $('hsChk').checked = draft.hs;
+  draft = { bd: !!S.bd, hs: !!S.hstroke, light: !!S.light };
+  $('bdChk').checked = draft.bd; $('hsChk').checked = draft.hs; $('lightChk').checked = draft.light;
   $('goalNow').textContent = `${goal} words` + (score ? ` (${score} read so far)` : '');
   showCurLesson();
 }
@@ -2649,8 +2653,9 @@ function label() {
 function applyDraft() {
   if (!draft) return;
   const bdChanged = draft.bd !== !!S.bd;
-  Object.assign(S, { bd: draft.bd, hstroke: draft.hs });
+  Object.assign(S, { bd: draft.bd, hstroke: draft.hs, light: draft.light });
   word.classList.toggle('hstroke', !!S.hstroke); document.documentElement.classList.toggle('hpink', !!S.hstroke);
+  word.classList.toggle('lightpre', !!S.light);
   save();
   if (bdChanged && current) redraw();
 }
@@ -2680,6 +2685,7 @@ new MutationObserver(() => { if (S.theme === 'light' || S.theme === 'dark') appl
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.theme = b.dataset.v; save(); applyTheme(); });
 applyTheme();
 $('hsChk').addEventListener('change', e => { draft.hs = e.target.checked; });
+$('lightChk').addEventListener('change', e => { draft.light = e.target.checked; });
 // font and letter spacing for the practice word; re-measure once the font has loaded
 function applyType() {
   word.classList.add('wide');   // wide letter spacing, always
